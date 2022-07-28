@@ -1,5 +1,24 @@
 <template>
   <div id="main">
+    <vue-particles
+      color="#dedede"
+      :particleOpacity="0.7"
+      :particlesNumber="80"
+      shapeType="star"
+      :particleSize="4"
+      linesColor="#FFFFFF"
+      :linesWidth="2"
+      :lineLinked="true"
+      :lineOpacity="0.4"
+      :linesDistance="150"
+      :moveSpeed="4"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+      class="cash"
+    >
+    </vue-particles>
     <el-container>
       <el-header height="40px">
         <headerIndex @switchUnits="switchUnits" />
@@ -31,18 +50,29 @@ export default {
 
 <style lang="less" scoped>
 #main {
-  background: #d3dce6;
+  width: 100%;
+  min-width: 1300px;
+}
+.cash {
+  position: absolute;
+  width: 100%;
+  height: 99%;
 }
 .el-header {
   background-color: rgb(84, 92, 100);
   line-height: 40px;
 }
 .el-main {
-  padding-top: 40px;
+  margin: 0 200px;
+  padding-top: 30px;
+  height: 800px;
 }
 .el-container {
   margin: 0;
   padding: 0;
+}
+.el-footer {
+  margin: 0 200px;
 }
 </style>
 >
