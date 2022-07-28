@@ -13,6 +13,9 @@
           </div>
         </div>
       </el-col>
+      <el-avatar
+        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+      ></el-avatar>
     </el-row>
   </div>
 </template>
@@ -34,6 +37,25 @@ export default {
         { id: 5, title: "登录/注册" },
       ],
     };
+  },
+  created() {
+    console.log(this.$route.path);
+    switch (this.$route.path) {
+      case "/community":
+        this.activeIndex = 0;
+        break;
+      case "/home":
+        this.activeIndex = 1;
+        break;
+      case "/myindex":
+        this.activeIndex = 2;
+        break;
+      case "/publication":
+        this.activeIndex = 3;
+        break;
+      default:
+        break;
+    }
   },
   methods: {
     handleSelect(item, index) {

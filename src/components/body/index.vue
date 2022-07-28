@@ -43,6 +43,14 @@ export default {
     leftContent,
     rightContent,
   },
+  created() {
+    console.log(this.$route.path);
+    if (this.$route.path == "/publication" || this.$route.path == "/myindex") {
+      this.partShow = false;
+    } else {
+      this.partShow = true;
+    }
+  },
   methods: {
     changeUnits(type) {
       if (type == "/publication" || type == "/myindex") {
@@ -83,6 +91,7 @@ export default {
 }
 .centerBody {
   overflow-y: auto;
+  text-align: justify;
 }
 .centerBody::-webkit-scrollbar {
   width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
