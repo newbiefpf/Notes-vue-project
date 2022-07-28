@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div id="main">
     <el-container>
       <el-header height="40px">
-        <headerIndex />
+        <headerIndex @switchUnits="switchUnits" />
       </el-header>
-      <el-main><bodyIndex /></el-main>
+      <el-main><bodyIndex ref="bodyContent" /></el-main>
       <el-footer><footerIndex /></el-footer>
     </el-container>
   </div>
@@ -21,13 +21,24 @@ export default {
     bodyIndex,
     footerIndex,
   },
+  methods: {
+    switchUnits(type) {
+      this.$refs.bodyContent.changeUnits(type);
+    },
+  },
 };
 </script>
 
 <style lang="less" scoped>
+#main {
+  background: #d3dce6;
+}
 .el-header {
   background-color: rgb(84, 92, 100);
   line-height: 40px;
+}
+.el-main {
+  padding-top: 40px;
 }
 .el-container {
   margin: 0;

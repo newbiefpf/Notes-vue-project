@@ -14,49 +14,53 @@
         </div>
       </el-col>
     </el-row>
-    <loginDialog ref="loginDialog" />
   </div>
 </template>
 
 <script>
-import loginDialog from "../login/login.vue";
 export default {
   name: "headerIndex",
   components: {
-    loginDialog,
+    // loginDialog,
   },
   data() {
     return {
       activeIndex: -1,
       menuList: [
-        { id: 1, title: "首页" },
-        { id: 2, title: "我的" },
-        { id: 3, title: "发表" },
-        { id: 4, title: "登录/注册" },
+        { id: 1, title: "社区" },
+        { id: 2, title: "首页" },
+        { id: 3, title: "自己" },
+        { id: 4, title: "发表" },
+        { id: 5, title: "登录/注册" },
       ],
     };
   },
   methods: {
     handleSelect(item, index) {
       this.activeIndex = index;
-      console.log(item);
       switch (item.id) {
         case 1:
+          this.switchUnits("/community");
           break;
         case 2:
+          this.switchUnits("/home");
           break;
         case 3:
+          this.switchUnits("/myindex");
           break;
         case 4:
-          this.openLoginDialog();
+          this.switchUnits("/publication");
+          break;
+        case 5:
+          this.switchUnits("/login");
           break;
 
         default:
           break;
       }
     },
-    openLoginDialog() {
-      this.$refs.loginDialog.dialogFormVisible = true;
+    switchUnits(type) {
+      this.$emit("switchUnits", type);
     },
   },
 };

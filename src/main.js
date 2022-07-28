@@ -8,6 +8,9 @@ import "@/assets/css/global.css"
 import 'element-ui/lib/theme-chalk/display.css';
 // 加载全局样式文件
 import '@/permission' // permission control
+import { Message } from 'element-ui'
+// 挂载到$message上
+Vue.prototype.$message = Message
 
 Vue.use(ElementUI)
 Vue.config.productionTip = false

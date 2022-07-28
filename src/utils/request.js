@@ -1,13 +1,13 @@
 // 引入axios
 import axios from 'axios'
 import store from '@/store/index';
-import { message } from 'element-ui';
+import { Message } from 'element-ui';
 const service = axios.create({
   baseURL: "/api",
   timeout: 20000,
 });
 // 设置post请求头
-axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+service.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 //设置响应头 设置允许跨域
 
 // 请求拦截
@@ -27,13 +27,18 @@ service.interceptors.request.use(
   }
 );
 // 响应拦截
-axios.interceptors.response.use(response => {
+service.interceptors.response.use(response => {
   // 对响应数据做点什么
-  message.info(response.message);
-  return response;
+  var res = response.data;
+    if (res.code == 200) {
+      return res;
+    } else {
+      Message.warning(res.message);
+      return res;
+    }
 }, error => {
   // 对响应错误做点什么
-  message.info(error.message);
+  Message.error(error.message);
   return Promise.reject(error);
 });
 
