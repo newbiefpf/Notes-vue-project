@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 const constRoutes = [
   {
     path: "/",
-    redirect: "/publication",
+    redirect: "/community",
     component: () => import("@/views/index"),
     children: [
       {
