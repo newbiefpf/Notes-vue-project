@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-show="!steps" class="">
-      <el-form label-position="right" :model="article">
+      <el-form label-position="right">
         <el-form-item label="主题">
           <el-input type="textarea" v-model="article.title"></el-input>
         </el-form-item>
@@ -13,7 +13,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="简介">
-          <el-input type="textarea" v-model="article.desc"></el-input>
+          <el-input type="textarea" v-model="article.abstract"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="nextShow()">下一步</el-button>
@@ -33,6 +33,7 @@
 
 <script>
 import { MarkdownPro, MarkdownPreview } from "vue-meditor";
+import { publishArticle } from "@/api/index";
 export default {
   name: "publicationIndex",
   data () {
@@ -52,9 +53,14 @@ export default {
     MarkdownPro,
     MarkdownPreview,
   },
+  computed: {
+    userInfo () {
+      return this.$store.getters.getUserInfo;
+    }
+  },
   methods: {
+    // 自动保存
     handleOnSave ({ value, theme }) {
-      console.log(value, theme);
       this.article.contentHtml = value
     },
     handleAvatarSuccess (res, file) {
@@ -75,7 +81,18 @@ export default {
     nextShow () {
       this.steps = !this.steps;
     },
-    onSubmit () {
+    async onSubmit () {
+
+      this.article.userId = this.userInfo.userId
+      let res = await publishArticle(this.article);
+      debugger
+      if (res) {
+
+      } else {
+
+      }
+
+      console.log(this.article, this.userInfo);
     },
   },
 };

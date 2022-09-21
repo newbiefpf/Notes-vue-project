@@ -44,3 +44,10 @@ export function getArticleInfo (id) {
     method: "get",
   });
 }
+export function publishArticle (data) {
+  return request({
+    url: `v1/publish`,
+    method: "PUT",
+    data,
+  });
+}

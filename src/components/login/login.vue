@@ -98,6 +98,7 @@ export default {
       },
     };
   },
+
   methods: {
     sendCode () {
       const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
@@ -121,11 +122,10 @@ export default {
               password: this.ruleForm.password
 
             }
-
             login(data).then((res) => {
               if (res.code == 200) {
-                setToken(res.data.token)
                 this.$router.push('/home')
+                this.$store.dispatch('asyncSetUserInfo', JSON.stringify(res.data))
               }
             });
           } else {

@@ -1,16 +1,16 @@
-const token = 'access_token'//token
 // token
 export function getToken () {
-  return localStorage.getItem("token")
+  const token = JSON.parse(localStorage.getItem("userInfo")).token
+  return token
+}
+export function removeUserInfo () {
+  return localStorage.removeItem("userInfo")
+}
+export function getUserInfo () {
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"))
+  return userInfo
 }
 
-export function setToken (token) {
-  return localStorage.setItem("token", token)
-}
-
-export function removeToken () {
-  return localStorage.removeItem(token)
-}
 
 
 

@@ -13,8 +13,8 @@ import { Message } from "element-ui";
 import VueParticles from "vue-particles";
 // 挂载到$message上
 Vue.prototype.$message = Message;
-
 Vue.prototype.$axios = axios;
+Vue.prototype.$store = store;
 Vue.use(VueParticles);
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
