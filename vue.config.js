@@ -1,15 +1,3 @@
-const { defineConfig } = require("@vue/cli-service");
-module.exports = defineConfig({
-  lintOnSave: false, //关闭语法检查
-  transpileDependencies: true,
-  //开启代理服务器
-  devServer: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:8888",
-        pathRewrite: { "^/api": "" },
-        changeOrigin: true,
-      },
-    },
-  },
-});
+module.exports = {
+  publicPath: process.env.NODE_ENV === "production" ? "/simple-hackathon-vue/" : "/",
+};

@@ -1,31 +1,56 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import getters from "./getters";
-import {
-  getUserInfo,
+import Vue from "vue";
+import Vuex from "vuex";
+import { mutations } from "@/store/mutationsNames";
+import { actions } from "@/store/actionsNames";
 
-} from "@/utils/auth.js";
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   state: {
-    token: null,
-    userInfo: getUserInfo()
+    theme: "",
+    layout: "",
   },
   mutations: {
-    setUserInfo (state, data) {
-      // 变更状态
-      state.userInfo = data;
-      localStorage.setItem("userInfo", data)
-
-    }
-  },
-  // 执行异步
-  actions: {
-    asyncSetUserInfo (context, data) {
-      context.commit('setUserInfo', data)
+    [mutations.SetTheme](state, theme) {
+      state.theme = theme;
+      localStorage.theme = theme;
+    },
+    [mutations.SetLayout](state, layout) {
+      state.layout = layout;
+      localStorage.layout = layout;
     },
   },
-  getters,
-})
-export default store
+  actions: {
+    [actions.InitTheme]({ commit }) {
+      const cachedTheme = localStorage.theme ? localStorage.theme : false;
+      const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const theme = cachedTheme ? cachedTheme : userPrefersDark ? themes.dark : themes.light;
+
+      commit(mutations.SetTheme, theme);
+    },
+    [actions.InitLayout]({ commit }) {
+      const cachedLayout = localStorage.layout ? localStorage.layout : false;
+      const layout = cachedLayout ? cachedLayout : layouts.landing;
+
+      commit(mutations.SetLayout, layout);
+    },
+    [actions.ToggleTheme]({ commit }) {
+      const currentTheme = localStorage.theme;
+      const newTheme = currentTheme === themes.light ? themes.dark : themes.light;
+
+      commit(mutations.SetTheme, newTheme);
+    },
+  },
+  modules: {},
+});
+
+export const themes = {
+  light: "light",
+  dark: "dark",
+};
+
+export const layouts = {
+  centered: "centered",
+  sidebar: "sidebar",
+  landing: "landing",
+};

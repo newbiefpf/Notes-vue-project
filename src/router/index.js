@@ -1,50 +1,32 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import Home from "@/views/Home.vue";
 
 Vue.use(VueRouter);
-const constRoutes = [
+
+const routes = [
   {
     path: "/",
-    redirect: "/community",
-    component: () => import("@/views/index"),
-    children: [
-      {
-        path: "/home",
-        component: () => import("@/components/body/center/home.vue"),
-      },
-      {
-        path: "/community",
-        component: () => import("@/components/body/center/community.vue"),
-      },
-      {
-        path: "/myindex",
-        component: () => import("@/components/body/center/myindex.vue"),
-      },
-      {
-        path: "/publication",
-        component: () => import("@/components/body/center/publication.vue"),
-      },
-    ],
+    component: Home,
   },
   {
-    path: "/login",
-    component: () => import("@/components/login/login.vue"),
+    path: "/profile",
+    component: () => import("@/views/Profile"),
+  },
+  {
+    path: "/messages",
+    component: () => import("@/views/Messages"),
+  },
+  {
+    path: "/settings",
+    component: () => import("@/views/Settings"),
   },
 ];
 
-//重复点击同一路由报错问题
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch((err) => err);
-};
-
 const router = new VueRouter({
   mode: "history",
-  routes: [...constRoutes],
-});
-router.beforeEach((to, from, next) => {
-  window.document.title = to.meta.title ? to.meta.title : "Note";
-  next();
+  base: process.env.BASE_URL,
+  routes,
 });
 
 export default router;
