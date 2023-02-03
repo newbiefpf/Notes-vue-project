@@ -11,6 +11,17 @@
         v-if="isOpen">
         <div
           class="flex flex-col gap-1 cursor-pointer"
+          :class="{ 'opacity-40': currentLayout !== layouts.landing }"
+          @click="switchLayout(layouts.landing)">
+          <h1 class="text-light-primary dark:text-dark-primary">Landing layout</h1>
+          <section class="flex flex-col w-48 h-48 border-2 border-sky-blue rounded-md p-3 gap-y-1">
+            <header class="flex items-center justify-center w-full h-full bg-sky-blue">
+              <p class="text-white text-xs">Landing page</p>
+            </header>
+          </section>
+        </div>
+        <div
+          class="flex flex-col gap-1 cursor-pointer"
           :class="{ 'opacity-40': currentLayout !== layouts.centered }"
           @click="switchLayout(layouts.centered)">
           <h1 class="text-light-primary dark:text-dark-primary">Centered layout</h1>
@@ -34,18 +45,6 @@
               <nav class="order-first h-full w-1/4 bg-sky-blue"></nav>
               <main class="h-full w-full bg-sky-blue"></main>
             </div>
-          </section>
-        </div>
-
-        <div
-          class="flex flex-col gap-1 cursor-pointer"
-          :class="{ 'opacity-40': currentLayout !== layouts.landing }"
-          @click="switchLayout(layouts.landing)">
-          <h1 class="text-light-primary dark:text-dark-primary">Landing layout</h1>
-          <section class="flex flex-col w-48 h-48 border-2 border-sky-blue rounded-md p-3 gap-y-1">
-            <header class="flex items-center justify-center w-full h-full bg-sky-blue">
-              <p class="text-white text-xs">Landing page</p>
-            </header>
           </section>
         </div>
       </nav>

@@ -11,30 +11,31 @@ export default new Vuex.Store({
     layout: "",
   },
   mutations: {
-    [mutations.SetTheme](state, theme) {
+    [mutations.SetTheme] (state, theme) {
       state.theme = theme;
       localStorage.theme = theme;
     },
-    [mutations.SetLayout](state, layout) {
+    [mutations.SetLayout] (state, layout) {
       state.layout = layout;
       localStorage.layout = layout;
     },
   },
   actions: {
-    [actions.InitTheme]({ commit }) {
+    [actions.InitTheme] ({ commit }) {
       const cachedTheme = localStorage.theme ? localStorage.theme : false;
-      const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const theme = cachedTheme ? cachedTheme : userPrefersDark ? themes.dark : themes.light;
+      // const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // const theme = cachedTheme ? cachedTheme : userPrefersDark ? themes.dark : themes.light;
 
+      const theme = cachedTheme ? cachedTheme : themes.dark;
       commit(mutations.SetTheme, theme);
     },
-    [actions.InitLayout]({ commit }) {
+    [actions.InitLayout] ({ commit }) {
       const cachedLayout = localStorage.layout ? localStorage.layout : false;
       const layout = cachedLayout ? cachedLayout : layouts.landing;
 
       commit(mutations.SetLayout, layout);
     },
-    [actions.ToggleTheme]({ commit }) {
+    [actions.ToggleTheme] ({ commit }) {
       const currentTheme = localStorage.theme;
       const newTheme = currentTheme === themes.light ? themes.dark : themes.light;
 
