@@ -1,48 +1,52 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { mutations } from "@/store/mutationsNames";
-import { actions } from "@/store/actionsNames";
+import user from "./modules/user";
+import getters from "./getters";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+
+  modules: {
+    user,
+  },
+  // =====配置=====
   state: {
     theme: "",
     layout: "",
   },
   mutations: {
-    [mutations.SetTheme] (state, theme) {
+    SetTheme (state, theme) {
       state.theme = theme;
       localStorage.theme = theme;
     },
-    [mutations.SetLayout] (state, layout) {
+    SetLayout (state, layout) {
       state.layout = layout;
       localStorage.layout = layout;
     },
   },
   actions: {
-    [actions.InitTheme] ({ commit }) {
+    InitTheme ({ commit }) {
       const cachedTheme = localStorage.theme ? localStorage.theme : false;
       // const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       // const theme = cachedTheme ? cachedTheme : userPrefersDark ? themes.dark : themes.light;
 
       const theme = cachedTheme ? cachedTheme : themes.dark;
-      commit(mutations.SetTheme, theme);
+      commit("SetTheme", theme);
     },
-    [actions.InitLayout] ({ commit }) {
+    InitLayout ({ commit }) {
       const cachedLayout = localStorage.layout ? localStorage.layout : false;
       const layout = cachedLayout ? cachedLayout : layouts.landing;
 
-      commit(mutations.SetLayout, layout);
+      commit("SetLayout", layout);
     },
-    [actions.ToggleTheme] ({ commit }) {
+    ToggleTheme ({ commit }) {
       const currentTheme = localStorage.theme;
       const newTheme = currentTheme === themes.light ? themes.dark : themes.light;
-
-      commit(mutations.SetTheme, newTheme);
+      commit("SetTheme", newTheme);
     },
   },
-  modules: {},
+  getters,
 });
 
 export const themes = {

@@ -34,7 +34,7 @@
       <div class="h-full max-w-screen-lg mx-auto flex flex-col items-center justify-center">
         <h1 class="text-7xl text-gray-800 dark:text-white font-semibold leading-none tracking-tighter mb-4">特性</h1>
         <div class="max-w-sm mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start md:max-w-2xl lg:max-w-none mt-8">
-          <UiFeatureCard icon="th-large" header="布局" description="三种布局" />
+          <UiFeatureCard icon="th-large" header="布局" description="三种样式" />
           <UiFeatureCard icon="tailwind" header="风格" description="基于不同的风格" />
           <UiFeatureCard icon="moon" header="主题" description="黑白主题" />
         </div>

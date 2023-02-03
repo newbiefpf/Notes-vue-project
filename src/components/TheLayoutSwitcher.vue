@@ -13,10 +13,10 @@
           class="flex flex-col gap-1 cursor-pointer"
           :class="{ 'opacity-40': currentLayout !== layouts.landing }"
           @click="switchLayout(layouts.landing)">
-          <h1 class="text-light-primary dark:text-dark-primary">Landing layout</h1>
+          <h1 class="text-light-primary dark:text-dark-primary">封面</h1>
           <section class="flex flex-col w-48 h-48 border-2 border-sky-blue rounded-md p-3 gap-y-1">
             <header class="flex items-center justify-center w-full h-full bg-sky-blue">
-              <p class="text-white text-xs">Landing page</p>
+              <p class="text-white text-xs">封面页面</p>
             </header>
           </section>
         </div>
@@ -24,7 +24,7 @@
           class="flex flex-col gap-1 cursor-pointer"
           :class="{ 'opacity-40': currentLayout !== layouts.centered }"
           @click="switchLayout(layouts.centered)">
-          <h1 class="text-light-primary dark:text-dark-primary">Centered layout</h1>
+          <h1 class="text-light-primary dark:text-dark-primary">居中布局</h1>
           <section class="flex flex-col w-48 h-48 border-2 border-sky-blue rounded-md p-3 gap-y-1">
             <header class="h-4 w-full bg-sky-blue"></header>
             <div class="flex flex-1 gap-x-1 px-3">
@@ -38,7 +38,7 @@
           class="flex flex-col gap-1 cursor-pointer"
           :class="{ 'opacity-40': currentLayout !== layouts.sidebar }"
           @click="switchLayout(layouts.sidebar)">
-          <h1 class="text-light-primary dark:text-dark-primary">Sidebar layout</h1>
+          <h1 class="text-light-primary dark:text-dark-primary">展开布局</h1>
           <section class="flex flex-col w-48 h-48 border-2 border-sky-blue rounded-md p-3 gap-y-1">
             <header class="h-4 w-full bg-sky-blue"></header>
             <div class="flex flex-1 gap-x-1">
@@ -54,7 +54,6 @@
 
 <script>
 import { layouts } from "@/store";
-import { mutations } from "@/store/mutationsNames";
 import UiIconButton from "@/components/ui/UiIconButton";
 
 export default {
@@ -75,7 +74,14 @@ export default {
 
   methods: {
     switchLayout(layout) {
-      this.$store.commit(mutations.SetLayout, layout);
+      // const token = util.cookies.get('token');
+      const token = this.$store.getters.access_token;
+      if (token) {
+        this.$store.commit("SetLayout", layout);
+      } else {
+        this.$Message.error("还没登录哦！！！");
+        this.$store.commit("SetLayout", layouts.landing);
+      }
     },
 
     toggleDropDown() {

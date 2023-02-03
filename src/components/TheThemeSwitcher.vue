@@ -4,7 +4,6 @@
 
 <script>
 import { themes } from "@/store";
-import { actions } from "@/store/actionsNames";
 import UiIconButton from "@/components/ui/UiIconButton";
 
 export default {
@@ -21,7 +20,7 @@ export default {
 
   methods: {
     switchTheme() {
-      this.$store.dispatch(actions.ToggleTheme);
+      this.$store.dispatch("ToggleTheme");
     },
   },
 };

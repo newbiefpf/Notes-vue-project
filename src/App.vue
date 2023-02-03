@@ -35,7 +35,6 @@ import TheHeader from "@/components/TheHeader";
 import TheSidebar from "@/components/TheSidebar";
 import TheLogo from "@/components/TheLogo";
 import { layouts } from "@/store";
-import { actions } from "@/store/actionsNames";
 import TheLandingPages from "@/components/TheLandingPages";
 
 export default {
@@ -67,8 +66,8 @@ export default {
   },
 
   created() {
-    this.$store.dispatch(actions.InitTheme);
-    this.$store.dispatch(actions.InitLayout);
+    this.$store.dispatch("InitTheme");
+    this.$store.dispatch("InitLayout");
   },
 };
 </script>

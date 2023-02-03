@@ -1,32 +1,35 @@
-import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "@/views/Home.vue";
+// import store from '@/store/index';
+import { Message } from 'view-design';
+// 路由数据
+import routes from './router.js';
 
-Vue.use(VueRouter);
-
-const routes = [
-  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/profile",
-    component: () => import("@/views/Profile"),
-  },
-  {
-    path: "/messages",
-    component: () => import("@/views/Messages"),
-  },
-  {
-    path: "/settings",
-    component: () => import("@/views/Settings"),
-  },
-];
-
+// 导出路由 在 main.js 里使用
 const router = new VueRouter({
   mode: "history",
-  base: process.env.BASE_URL,
   routes,
+});
+
+/**
+ * 路由拦截
+ * 权限验证
+ */
+
+router.beforeEach((to, from, next) => {
+
+  // 这里依据 token 判断是否登录，可视情况修改
+  const token = "cs";
+  // const token = util.cookies.get('token');
+  if (token == "cs") {
+    next();
+  } else {
+    Message.error("还没登录哦！！！");
+    return
+  }
+});
+
+router.afterEach(to => {
+  console.log(to);
 });
 
 export default router;
