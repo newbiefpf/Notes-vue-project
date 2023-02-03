@@ -1,10 +1,11 @@
 <template>
   <div class="box">
     <UiSidebar class="m-2">
-      <UiSidebarItem to="/" name="Home" icon="home" />
-      <UiSidebarItem to="/profile" name="Profile" icon="user" />
-      <UiSidebarItem to="/messages" name="Messages" icon="envelope" />
-      <UiSidebarItem to="/settings" name="Settings" icon="cogs" />
+      <UiSidebarItem to="/" name="笔记主页" icon="home" />
+      <UiSidebarItem to="/profile" name="笔记发布" icon="user" />
+      <UiSidebarItem to="/messages" name="消息通知" icon="envelope" />
+      <UiSidebarItem to="/public" name="共享笔记" icon="comment" />
+      <UiSidebarItem to="/settings" name="基础配置" icon="cogs" />
     </UiSidebar>
   </div>
 </template>

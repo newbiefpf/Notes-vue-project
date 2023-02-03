@@ -26,7 +26,7 @@
         <slot :name="slotsNames.sidebar" />
       </nav>
 
-      <main class="flex-1 overflow-y-auto">
+      <main class="flex-1 overflow-y-auto allSor">
         <slot :name="slotsNames.content" />
       </main>
     </div>
@@ -64,3 +64,15 @@ export default {
   },
 };
 </script>
+<style scoped>
+.allSor::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+.allSor::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
+}
+</style>

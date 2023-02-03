@@ -17,6 +17,10 @@ const routes = [
     component: () => import("@/views/Messages"),
   },
   {
+    path: "/public",
+    component: () => import("@/views/Public"),
+  },
+  {
     path: "/settings",
     component: () => import("@/views/Settings"),
   },

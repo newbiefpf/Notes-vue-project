@@ -5,6 +5,9 @@
     :to="to">
     <v-icon :name="icon" class="w-4 h-4 fill-current" />
     <p>{{ name }}</p>
+    <Badge :count="2" v-if="name == '消息通知'" style="margin-left: 18px">
+      <a href="#" class="demo-badge"></a>
+    </Badge>
   </router-link>
 </template>
 
