@@ -6,14 +6,31 @@
       :key="item.id"
       @click="readMessage(item)">
       <div class="font-medium dark:text-dark-primary textBox">
-        <div class="textStyl">{{ index + 1 }}.{{ item.text }}</div>
-        <div class="textIcon"><Icon type="md-close" style="margin-right: 20px; cursor: pointer" /></div>
+        <div class="textStyl">
+          <Badge status="error" v-if="item.id % 2 == 0" />
+          <Badge status="default" v-else />
+          {{ index + 1 }}.{{ item.text }}
+        </div>
+        <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessage(item)" style="margin-right: 20px; cursor: pointer" /></div>
       </div>
     </div>
+
+    <popup :visible.sync="visible">
+      <template slot="footer">
+        <button class="cancelBtn" @click="comfirm">取消</button>
+        <button class="comfirmBtn" @click="cancel">已读</button>
+      </template>
+    </popup>
+    <popup :visible.sync="delVisible" :title="'删除提醒'" :width="'20%'" @handleCancel="cancel" @handleComfirm="deleteComfirm">
+      <template slot="body">
+        <div>是否将已读/未读信息删除！！！</div>
+      </template>
+    </popup>
   </div>
 </template>
 
 <script>
+import popup from "@/components/popupWindows";
 export default {
   name: "Messages",
   data() {
@@ -30,12 +47,29 @@ export default {
         { id: 8, text: "cs" },
         { id: 9, text: "cs" },
       ],
+      visible: false,
+      delVisible: false,
     };
   },
-  components: {},
+  components: { popup },
   methods: {
     readMessage(item) {
       console.log(item.id);
+      this.visible = true;
+    },
+    deleteMessage(item) {
+      console.log(item.id);
+      this.delVisible = true;
+    },
+    deleteComfirm() {
+      this.delVisible = false;
+    },
+    cancel() {
+      this.visible = false;
+      this.delVisible = false;
+    },
+    comfirm() {
+      this.visible = false;
     },
   },
 };
@@ -75,6 +109,18 @@ export default {
   height: 650px;
   padding: 10px;
   overflow-y: auto;
+}
+.comfirmBtn {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 4px 16px;
+  margin-right: 20px;
+}
+.cancelBtn {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 4px 16px;
+  margin-right: 20px;
 }
 .groupBox::-webkit-scrollbar {
   width: 6px !important;
