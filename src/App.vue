@@ -9,7 +9,7 @@
       </template>
       <template #content>
         <transition name="fade" appear>
-          <div class="box" style="height: 700px">
+          <div class="box">
             <router-view class="m-2" />
           </div>
         </transition>
@@ -72,6 +72,9 @@ export default {
 };
 </script>
 <style lang="less">
+.box {
+  overflow-y: auto;
+}
 .box::-webkit-scrollbar {
   width: 6px !important;
   background: #fff !important;

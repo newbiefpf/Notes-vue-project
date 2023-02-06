@@ -3,7 +3,7 @@
     <div class="backtrack">
       <Icon type="ios-undo" size="30" @click="backtrack" />
     </div>
-    <div class="ql-container ql-snow" style="">
+    <div class="ql-container ql-snow">
       <div class="ql-editor" data-gramm="false" contenteditable="false" v-html="str"></div>
     </div>
   </div>
@@ -42,5 +42,15 @@ export default {
   text-align: center;
   margin-top: -15px;
   cursor: pointer;
+}
+.ql-editor::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+.ql-editor::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
 }
 </style>

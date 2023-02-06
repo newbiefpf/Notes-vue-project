@@ -25,23 +25,17 @@
         </FormItem>
       </Form>
     </div>
-    <Modal v-model="modalType" width="360" class="bg-dark-secondary" key="">
-      <p slot="header" style="color: #f60; text-align: center">
-        <Icon type="ios-information-circle"></Icon>
-        <span>清空提醒</span>
-      </p>
-      <div style="text-align: center">
-        <p>所有编写类容将会被清空！！！</p>
-      </div>
-      <div slot="footer">
-        <Button type="error" size="large" long @click="deleteData">确定</Button>
-      </div>
-    </Modal>
+    <popup :visible.sync="modalType" :width="'40%'" :title="'清空提醒'" @handleCancel="deleteData" @handleComfirm="deleteData">
+      <template slot="body">
+        <div class="font-medium text-light-primary dark:text-dark-primary">所有填写的类容将会被清空！！！</div>
+      </template>
+    </popup>
   </div>
 </template>
 
 <script>
 import { quillEditor } from "vue-quill-editor";
+import popup from "@/components/popupWindows";
 
 export default {
   name: "Profile",
@@ -80,7 +74,7 @@ export default {
       },
     };
   },
-  components: { quillEditor },
+  components: { quillEditor, popup },
   computed: {
     editor() {
       return this.$refs.myQuillEditor.quill;
