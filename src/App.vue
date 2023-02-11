@@ -36,7 +36,7 @@ import TheSidebar from "@/components/TheSidebar";
 import TheLogo from "@/components/TheLogo";
 import { layouts } from "@/store";
 import TheLandingPages from "@/components/TheLandingPages";
-
+import { ping } from "@/api/user";
 export default {
   components: {
     TheLandingPages,
@@ -67,7 +67,15 @@ export default {
 
   created() {
     this.$store.dispatch("InitTheme");
-    this.$store.dispatch("InitLayout");
+    ping().then((res) => {
+      if (res.code == 200) {
+        this.$store.dispatch("InitLayout");
+      } else {
+        this.$Message.info("记得登录哦！！！");
+        this.$store.commit("SetLayout", layouts.landing);
+        this.$store.dispatch("user/refreshToken", "");
+      }
+    });
   },
 };
 </script>

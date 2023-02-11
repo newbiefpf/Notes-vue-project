@@ -74,7 +74,6 @@ export default {
 
   methods: {
     switchLayout(layout) {
-      // const token = util.cookies.get('token');
       const token = this.$store.getters.access_token;
       if (token) {
         this.$store.commit("SetLayout", layout);

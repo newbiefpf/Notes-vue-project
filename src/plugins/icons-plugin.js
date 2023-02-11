@@ -19,7 +19,7 @@ const logoIcon = {
 };
 
 export const IconsPlugin = {
-  install(Vue) {
+  install (Vue) {
     Icon.register(tailwindIcon);
     Icon.register(logoIcon);
     Vue.component("v-icon", Icon);

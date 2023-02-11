@@ -32,10 +32,12 @@
 
               <div>
                 <div v-if="tab">
-                  <FormItem label="登录名" prop="account">
-                    <Input v-model="formValidate.account" placeholder="请输入登录名"></Input>
+                  <FormItem label="登录名" prop="username">
+                    <Input v-model="formValidate.username" placeholder="请输入登录名"></Input>
                   </FormItem>
-                  <FormItem label="密码" prop="password"> <Input v-model="formValidate.password" placeholder="请输入密码"></Input> </FormItem>
+                  <FormItem label="密码" prop="password">
+                    <Input v-model="formValidate.password" placeholder="请输入密码" type="password"></Input>
+                  </FormItem>
                   <FormItem>
                     <Button type="primary" @click="handleSubmit('formValidate')" style="margin-left: 8px">登录</Button>
                     <Button @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
@@ -45,8 +47,8 @@
                   <FormItem label="昵称" prop="name">
                     <Input v-model="formValidate.name" placeholder="请输入昵称"></Input>
                   </FormItem>
-                  <FormItem label="登录名" prop="account">
-                    <Input v-model="formValidate.account" placeholder="请输入登录名"></Input>
+                  <FormItem label="登录名" prop="username">
+                    <Input v-model="formValidate.username" placeholder="请输入登录名"></Input>
                   </FormItem>
                   <FormItem label="密码" prop="password">
                     <Input v-model="formValidate.password" placeholder="请输入密码"></Input>
@@ -92,6 +94,7 @@
 </template>
 
 <script>
+import { login } from "@/api/user";
 export default {
   name: "TheLogo",
   data() {
@@ -99,16 +102,7 @@ export default {
       showHead: false,
       isOpen: false,
       tab: true,
-      formValidate: {
-        name: "",
-        mail: "",
-        city: "",
-        gender: "",
-        interest: [],
-        date: "",
-        time: "",
-        desc: "",
-      },
+      formValidate: {},
       ruleValidate: {
         name: [{ required: true, message: "请输入昵称", trigger: "blur" }],
         mail: [
@@ -118,7 +112,7 @@ export default {
         gender: [{ required: true, message: "请选择性别", trigger: "change" }],
         code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
         phone: [{ required: true, message: "请输入手机号码", trigger: "blur" }],
-        account: [{ required: true, message: "请输入登录账号", trigger: "blur" }],
+        username: [{ required: true, message: "请输入登录账号", trigger: "blur" }],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         reRassword: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
@@ -128,6 +122,15 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
+          console.log(this.formValidate);
+          login(this.formValidate).then((res) => {
+            console.log(res);
+            if (res.code == 200) {
+              this.$store.dispatch("user/refreshToken", res.data.token);
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
           this.$Message.success("Success!");
         } else {
           this.$Message.error("Fail!");
@@ -139,7 +142,6 @@ export default {
     },
     loginRegistration() {
       this.isOpen = !this.isOpen;
-      console.log(11);
     },
     closeDropDown() {
       if (this.isOpen === false) return;
