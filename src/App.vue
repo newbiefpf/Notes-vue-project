@@ -69,9 +69,9 @@ export default {
     this.$store.dispatch("InitTheme");
     ping().then((res) => {
       if (res.code == 200) {
+        this.$store.commit("user/getUserInfo");
         this.$store.dispatch("InitLayout");
       } else {
-        this.$Message.info("记得登录哦！！！");
         this.$store.commit("SetLayout", layouts.landing);
         this.$store.dispatch("user/refreshToken", "");
       }

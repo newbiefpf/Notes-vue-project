@@ -75,11 +75,13 @@ export default {
   methods: {
     switchLayout(layout) {
       const token = this.$store.getters.access_token;
-      if (token) {
+      if (token && token != "") {
         this.$store.commit("SetLayout", layout);
       } else {
-        this.$Message.error("还没登录哦！！！");
-        this.$store.commit("SetLayout", layouts.landing);
+        this.$store.commit("SetLayout", "landing");
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("access_token");
+        this.$Message.info("请登录哦！！！");
       }
     },
 

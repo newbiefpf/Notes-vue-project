@@ -1,5 +1,5 @@
 import VueRouter from "vue-router";
-// import store from '@/store/index';
+import store from '@/store/index';
 import { Message } from 'view-design';
 // 路由数据
 import routes from './router.js';
@@ -16,14 +16,14 @@ const router = new VueRouter({
  */
 
 router.beforeEach((to, from, next) => {
-
   // 这里依据 token 判断是否登录，可视情况修改
-  const token = "cs";
-  // const token = util.cookies.get('token');
-  if (token == "cs") {
+  const token = store.getters.access_token;
+  if (token && token != "") {
     next();
   } else {
-    Message.error("还没登录哦！！！");
+    store.commit('user/refreshUserInfo', "")
+    localStorage.removeItem("userInfo");
+    Message.info("请登录哦！！！");
     return
   }
 });

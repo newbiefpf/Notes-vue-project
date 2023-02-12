@@ -46,7 +46,7 @@ service.interceptors.response.use(
         case 400: error.message = '参数错误'; break;
         case 401: error.message = '未授权，请登录'; break;
         case 403: error.message = '拒绝访问'; break;
-        case 404: error.message = `请求地址出错: ${error.response.config.url}`; break;
+        case 404: error.message = `请求地址出错`; break;
         case 408: error.message = '请求超时'; break;
         case 500: error.message = '服务器内部错误'; break;
         case 501: error.message = '服务未实现'; break;

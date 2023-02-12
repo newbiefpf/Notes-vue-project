@@ -5,18 +5,24 @@
         <FormItem label="标题" prop="title">
           <Input type="text" v-model="dataInfo.title" placeholder="请输入标题"></Input>
         </FormItem>
-        <FormItem label="描述" prop="description">
-          <Input v-model="dataInfo.description" type="textarea" :autosize="{ minRows: 1, maxRows: 1 }" placeholder="请输入描述"></Input>
+        <FormItem label="描述" prop="abstract">
+          <Input v-model="dataInfo.abstract" type="textarea" :autosize="{ minRows: 1, maxRows: 1 }" placeholder="请输入描述"></Input>
         </FormItem>
-        <FormItem label="分类" prop="classification">
-          <Select v-model="dataInfo.classification" placeholder="请选择分类">
-            <Option value="beijing">New York</Option>
-            <Option value="shanghai">London</Option>
-            <Option value="shenzhen">Sydney</Option>
+        <FormItem label="分类">
+          <Select v-model="dataInfo.classify" placeholder="请选择分类">
+            <Option value="1">New York</Option>
+            <Option value="2">London</Option>
+            <Option value="3">Sydney</Option>
+            <Option value="4">sadasff</Option>
           </Select>
         </FormItem>
         <div class="quillEditorStyl font-medium text-light-primary dark:text-dark-primary">
-          <quillEditor v-model="content" ref="myQuillEditor" :options="editorOption" @change="onEditorChange($event)" @keydown.ctrl.native="keyDown">
+          <quillEditor
+            v-model="dataInfo.contentHtml"
+            ref="myQuillEditor"
+            :options="editorOption"
+            @change="onEditorChange($event)"
+            @keydown.ctrl.native="keyDown">
           </quillEditor>
         </div>
         <FormItem style="margin-top: 15px">
@@ -25,7 +31,7 @@
         </FormItem>
       </Form>
     </div>
-    <popup :visible.sync="modalType" :width="'40%'" :title="'清空提醒'" @handleCancel="deleteData" @handleComfirm="deleteData">
+    <popup :visible.sync="modalType" :width="'40%'" :title="'清空提醒'" @handleCancel="modalType = false" @handleComfirm="deleteData">
       <template slot="body">
         <div class="font-medium text-light-primary dark:text-dark-primary">所有填写的类容将会被清空！！！</div>
       </template>
@@ -36,12 +42,12 @@
 <script>
 import { quillEditor } from "vue-quill-editor";
 import popup from "@/components/popupWindows";
+import { articlePut, articleGet, articlePost } from "@/api/articale";
 
 export default {
   name: "Profile",
   data() {
     return {
-      content: "",
       editorOption: {
         placeholder: "",
         modules: {
@@ -66,10 +72,16 @@ export default {
       },
       modalType: false,
       keyOne: null,
-      dataInfo: {},
+      dataInfo: {
+        userId: null,
+        title: null,
+        abstract: null,
+        contentHtml: null,
+        classify: "1",
+      },
+      articleId: null,
       ruleCustom: {
-        classification: [{ required: true, message: "文章分类必选", trigger: "change" }],
-        description: [{ required: true, message: "文章描述必填", trigger: "blur" }],
+        abstract: [{ required: true, message: "文章描述必填", trigger: "blur" }],
         title: [{ required: true, message: "文章标题必填", trigger: "blur" }],
       },
     };
@@ -79,19 +91,57 @@ export default {
     editor() {
       return this.$refs.myQuillEditor.quill;
     },
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
+  },
+  created() {
+    this.getParams();
   },
   methods: {
+    getParams() {
+      this.articleId = this.$route.query.id;
+      if (this.articleId) {
+        articleGet({ id: this.articleId }).then((res) => {
+          if (res.code == 200) {
+            this.dataInfo.title = res.data.title;
+            this.dataInfo.abstract = res.data.abstract;
+            this.dataInfo.contentHtml = res.data.contentHtml;
+            this.dataInfo.classify = res.data.classify;
+          }
+        });
+      }
+    },
     handleSubmit(name) {
-      this.$refs[name].validate((valid) => {
+      var vm = this;
+      vm.$refs[name].validate((valid) => {
         if (valid) {
-          this.$Message.success("Success!");
+          vm.dataInfo.userId = vm.userInfo.ID;
+          if (vm.articleId) {
+            vm.dataInfo.id = Number(vm.articleId);
+            articlePost(this.dataInfo).then((res) => {
+              if (res.code == 200) {
+                vm.$Message.success(res.msg);
+              } else {
+                vm.$Message.error(res.msg);
+              }
+            });
+          } else {
+            articlePut(vm.dataInfo).then((res) => {
+              if (res.code == 200) {
+                vm.$Message.success(res.msg);
+              } else {
+                vm.$Message.error(res.msg);
+              }
+            });
+          }
         } else {
-          this.$Message.error("Fail!");
+          debugger;
         }
       });
     },
     deleteData() {
-      this.content = "";
+      this.dataInfo.contentHtml = "";
       this.$refs.dataInfo.resetFields();
       this.modalType = false;
     },
@@ -104,13 +154,14 @@ export default {
       }
     },
     saveContent() {
-      console.log(this.content);
+      console.log(this.dataInfo.contentHtml);
     },
     onEditorChange({ quill, html, text }) {
       console.log(quill, html, text);
-      this.content = html;
+      this.dataInfo.contentHtml = html;
     },
   },
+
   mounted() {
     document.onkeydown = function (e) {
       if (e.ctrlKey == true && e.code == "KeyS") {

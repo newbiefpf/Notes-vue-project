@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="showHead">
+    <div v-if="userInfo">
       <router-link to="/" class="flex gap-x-3 items-center justify-center">
         <div class="headImg">
           <img src="@/assets/photo.jpeg" alt="出错了" srcset="" />
         </div>
         <div>
-          <p class="font-bold text-sky-blue font-mono tracking-widest uppercase hidden md:block">NEWBIEFPF</p>
+          <p class="font-bold text-sky-blue font-mono tracking-widest uppercase hidden md:block">{{ userInfo.name }}</p>
         </div>
       </router-link>
     </div>
@@ -118,20 +118,26 @@ export default {
       },
     };
   },
+  computed: {
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
+  },
+
   methods: {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          console.log(this.formValidate);
           login(this.formValidate).then((res) => {
-            console.log(res);
             if (res.code == 200) {
+              this.isOpen = false;
+              this.$Message.success("登录成功!");
               this.$store.dispatch("user/refreshToken", res.data.token);
+              this.$store.dispatch("user/refreshUserInfo", res.data.user);
             } else {
               this.$Message.error(res.msg);
             }
           });
-          this.$Message.success("Success!");
         } else {
           this.$Message.error("Fail!");
         }
@@ -145,7 +151,6 @@ export default {
     },
     closeDropDown() {
       if (this.isOpen === false) return;
-
       this.isOpen = false;
     },
   },

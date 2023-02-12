@@ -2,32 +2,69 @@
   <div class="groubAll">
     <div class="backtrack">
       <Icon type="ios-undo" size="30" @click="backtrack" />
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      <Icon type="ios-create" size="30" @click="updateArticle" />
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      <Icon type="md-trash" size="30" @click="modalType = true" />
     </div>
     <div class="ql-container ql-snow">
       <div class="ql-editor" data-gramm="false" contenteditable="false" v-html="str"></div>
     </div>
+    <popup :visible.sync="modalType" :width="'40%'" :title="'删除提醒'" @handleCancel="modalType = false" @handleComfirm="deleteData">
+      <template slot="body">
+        <div class="font-medium text-light-primary dark:text-dark-primary">你确定删除{{ articleInfo.title }}相关的数据吗！！！</div>
+      </template>
+    </popup>
   </div>
 </template>
 
 <script>
+import popup from "@/components/popupWindows";
+import { articleDelete } from "@/api/articale";
 export default {
   name: "Info",
   data() {
     return {
-      str: `<h1><span class="ql-size-huge">dasd </span></h1><<pre class="ql-syntax" spellcheck="false">撒地方
-</pre><p class="ql-align-center"><s>地方撒地方阿斯蒂芬</s></p><p class="ql-align-center">岁的法国的方式给对方灌灌灌灌灌灌灌灌灌灌灌灌灌</p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0);">当时法国的撒告诉对方</span></p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0); color: rgb(102, 102, 0);">岁的法国当时法国</span></p><p class="ql-align-center ql-direction-rtl"></p><p class="ql-align-center ql-direction-rtl">下</p><p class="ql-align-center ql-direction-rtl">xx<sup>x</sup>x</p><p class="ql-align-center ql-direction-rtl"></p><pre class="ql-syntax" spellcheck="false">asdqwe
-</pre><h1><span class="ql-size-huge">dasd </span></h1><<pre class="ql-syntax" spellcheck="false">撒地方
-</pre><p class="ql-align-center"><s>地方撒地方阿斯蒂芬</s></p><p class="ql-align-center">岁的法国的方式给对方灌灌灌灌灌灌灌灌灌灌灌灌灌</p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0);">当时法国的撒告诉对方</span></p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0); color: rgb(102, 102, 0);">岁的法国当时法国</span></p><p class="ql-align-center ql-direction-rtl"></p><p class="ql-align-center ql-direction-rtl">下</p><p class="ql-align-center ql-direction-rtl">xx<sup>x</sup>x</p><p class="ql-align-center ql-direction-rtl"></p><pre class="ql-syntax" spellcheck="false">asdqwe
-</pre><h1><span class="ql-size-huge">dasd </span></h1><<pre class="ql-syntax" spellcheck="false">撒地方
-</pre><p class="ql-align-center"><s>地方撒地方阿斯蒂芬</s></p><p class="ql-align-center">岁的法国的方式给对方灌灌灌灌灌灌灌灌灌灌灌灌灌</p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0);">当时法国的撒告诉对方</span></p><p class="ql-align-center"><span class="ql-font-monospace" style="background-color: rgb(161, 0, 0); color: rgb(102, 102, 0);">岁的法国当时法国</span></p><p class="ql-align-center ql-direction-rtl"></p><p class="ql-align-center ql-direction-rtl">下</p><p class="ql-align-center ql-direction-rtl">xx<sup>x</sup>x</p><p class="ql-align-center ql-direction-rtl"></p><pre class="ql-syntax" spellcheck="false">asdqwe 
-</pre>`,
+      str: "",
+      modalType: false,
     };
   },
+  components: { popup },
 
+  props: {
+    articleInfo: {
+      type: Object,
+    },
+  },
+  created() {
+    this.str = this.articleInfo.contentHtml;
+  },
   methods: {
+    deleteData() {
+      articleDelete({ id: this.articleInfo.id }).then((res) => {
+        if (res.code == 200) {
+          this.$emit("getData");
+          this.$Message.success("删除成功！！！");
+          this.$parent.InfoShow = true;
+        } else {
+          this.$Message.console.error(res.msg);
+        }
+      });
+      this.modalType = false;
+    },
     backtrack() {
       this.$parent.InfoShow = true;
       console.log(this.$parent.InfoShow);
+    },
+    updateArticle() {
+      this.$router.push({
+        path: "/profile",
+        query: {
+          id: this.articleInfo.id,
+        },
+      });
+
+      // this.$parent.InfoShow = true;
     },
   },
 };
@@ -39,7 +76,6 @@ export default {
   padding-bottom: 60px;
 }
 .backtrack {
-  text-align: center;
   margin-top: -15px;
   cursor: pointer;
 }
