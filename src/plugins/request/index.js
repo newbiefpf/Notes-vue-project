@@ -40,8 +40,7 @@ service.interceptors.response.use(
   },
   error => {
     if (error && error.response) {
-
-      store.dispatch("user/refreshToken", "");
+      // store.dispatch("user/refreshToken", "");
       switch (error.response.status) {
         case 400: error.message = '参数错误'; break;
         case 401: error.message = '未授权，请登录'; break;

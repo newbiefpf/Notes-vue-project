@@ -12,23 +12,23 @@
                 placeholder="Search" />
             </div>
           </div>
-          <div class="content">
+          <div class="content" :classify="item.id">
             <draggable
               group="site"
               animation="300"
               dragClass="dragClass"
               ghostClass="ghostClass"
               chosenClass="chosenClass"
+              style="min-height: 120px; display: block"
               @start="onStart"
+              @end="onEnd"
               @add="add">
               <transition-group style="min-height: 500px; display: block">
-                <div class="item cardBox" v-for="child in item.children" :key="child.id" :classify="item.id" :data-id="child.id">
+                <div class="item cardBox" v-for="(child, index) in item.children" :key="child.id" :data-id="child.id" :data-index="index">
                   <Card class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl" @click.native="openInfo(child)">
                     <div style="text-align: center">
                       <div>
-                        <div class="text-lg font-medium text-light-primary dark:text-dark-primary">
-                          {{ child.title }}
-                        </div>
+                        <div class="text-lg font-medium text-light-primary dark:text-dark-primary">{{ child.title }}==={{ child.id }}</div>
                         <div class="font-medium text-light-primary dark:text-dark-primary">
                           {{ child.abstract }}
                         </div>
@@ -36,7 +36,7 @@
                     </div>
                   </Card>
                 </div>
-                <div class="item cardBox" :classify="item.id" :data-id="'0'" :key="-1" style="display: none"></div>
+                <div v-if="!item.children" class="item cardBox" :data-id="'0'" :data-index="'-1'" :key="-1" style="display: none"></div>
               </transition-group>
             </draggable>
           </div>
@@ -52,15 +52,18 @@
 <script>
 import Info from "@/components/info";
 import draggable from "vuedraggable";
-import { articleListGet, articleTypePost } from "@/api/articale";
+import { articleListGet, sortTypePost } from "@/api/articale";
 export default {
   name: "Home",
   data() {
     return {
       InfoShow: true,
-      pId: null,
-      pClassify: null,
+      needChangeId: null,
+      pClassify: "",
       list: [],
+      beforId: null,
+      afterId: null,
+      position: "",
     };
   },
   components: {
@@ -73,7 +76,6 @@ export default {
   methods: {
     getData() {
       articleListGet(this.searchCriteria()).then((res) => {
-        console.log(res);
         if (res.code == 200) {
           this.list = res.data.list;
         } else {
@@ -91,25 +93,56 @@ export default {
       this.articleInfo = item;
     },
     onStart(e) {
-      console.log(e);
-      this.pId = e.item.getAttribute("data-id");
+      this.needChangeId = e.item.getAttribute("data-id");
+      // console.log("移动的:", this.needChangeId);
+      if (!this.needChangeId) return;
+    },
+    onEnd(e) {
+      if (e.oldIndex == null || e.newIndex == null) return;
+      if (!this.pClassify && e.oldIndex == e.newIndex) return;
+      // console.log("新:", e.newIndex, "旧:", e.oldIndex);
+      // console.log("移动的:", this.needChangeId);
+      // console.log("类型：", this.pClassify);
+      if (e.newIndex == 0) {
+        this.position = "FIRST";
+        this.beforId = 0;
+      } else {
+        this.beforId = e.to.childNodes[e.newIndex - 1].getAttribute("data-id");
+      }
+
+      if (!e.to.childNodes[e.newIndex + 1]) {
+        this.position = "LAST";
+        this.afterId = 0;
+      } else {
+        this.afterId = e.to.childNodes[e.newIndex + 1].getAttribute("data-id");
+      }
+      // console.log("前一个id：", this.beforId, "后一个id：", this.afterId);
+      // console.log("位置：", this.position);
+
+      sortTypePost({
+        id: Number(this.needChangeId),
+        afterId: Number(this.afterId),
+        beforId: Number(this.beforId),
+        position: this.position,
+        classify: this.pClassify,
+      }).then((res) => {
+        if (res.code == 200) {
+          this.getData();
+          this.$Message.success(res.msg);
+        } else {
+          this.$Message.error(res.msg);
+        }
+        this.needChangeId = null;
+        this.beforId = null;
+        this.afterId = null;
+        this.position = "";
+        this.pClassify = "";
+      });
     },
     add(e) {
-      this.pClassify = e.to.firstChild.getAttribute("classify");
-      if (this.pId && this.pClassify) {
-        articleTypePost({ id: Number(this.pId), classify: this.pClassify }).then((res) => {
-          if (res.code == 200) {
-            this.$Message.success(res.msg);
-            this.pId = null;
-            this.pClassify = null;
-          } else {
-            this.$Message.error(res.msg);
-          }
-          this.getData();
-          this.pId = null;
-          this.pClassify = null;
-        });
-      }
+      this.pClassify = e.to.parentNode.parentNode.getAttribute("classify");
+      console.log("f", this.pClassify);
+      if (!this.pClassify) return;
     },
   },
 };

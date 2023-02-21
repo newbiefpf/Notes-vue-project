@@ -39,9 +39,9 @@ export function articleDelete (data) {
 }
 
 
-export function articleTypePost (data) {
+export function sortTypePost (data) {
   return request({
-    url: '/api/articleType',
+    url: '/api/sortType',
     method: 'post',
     data
   });
