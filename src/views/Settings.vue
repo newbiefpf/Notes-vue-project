@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div style="height: 500px">
     <UiTitle text="Settings" />
-
-    <figure class="md:flex rounded-xl p-8 md:p-0">
+    <loopImg />
+    <!-- <figure class="md:flex rounded-xl p-8 md:p-0">
       <img
         class="w-24 h-24 object-cover md:rounded-md md:w-48 md:h-auto rounded-full mx-auto"
         src="@/assets/photo.jpeg"
@@ -21,15 +21,15 @@
           <div class="text-light-primary dark:text-dark-primary">HR, Saunafolk</div>
         </div>
       </div>
-    </figure>
+    </figure> -->
   </div>
 </template>
 
 <script>
 import UiTitle from "@/components/ui/UiTitle";
-
+import loopImg from "@/components/loop";
 export default {
   name: "Settings",
-  components: { UiTitle },
+  components: { UiTitle, loopImg },
 };
 </script>

@@ -26,12 +26,17 @@
               <transition-group style="min-height: 500px; display: block">
                 <div class="item cardBox" v-for="(child, index) in item.children" :key="child.id" :data-id="child.id" :data-index="index">
                   <Card class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl" @click.native="openInfo(child)">
-                    <div style="text-align: center">
-                      <div>
-                        <div class="text-lg font-medium text-light-primary dark:text-dark-primary">{{ child.title }}==={{ child.id }}</div>
-                        <div class="font-medium text-light-primary dark:text-dark-primary">
+                    <div class="articlBox">
+                      <div class="articlImg">
+                        <img src="@/assets/photo.jpeg" alt="出错了" srcset="" v-if="child.imgUrl == ''" />
+                        <img :src="child.imgUrl" alt="出错啦" v-else />
+                      </div>
+                      <div class="articlContent">
+                        <div class="text-lg font-medium dark:text-dark-primary titles">{{ child.title }}</div>
+                        <div class="font-medium text-light-primary dark:text-dark-primary abstract">
                           {{ child.abstract }}
                         </div>
+                        <div class="font-medium text-light-primary dark:text-dark-primary timeText">发布时间： {{ child.created_at | fmtime }}</div>
                       </div>
                     </div>
                   </Card>
@@ -50,11 +55,17 @@
 </template>
 
 <script>
+import { fmdata } from "@/utils/formatDate.js";
 import Info from "@/components/info";
 import draggable from "vuedraggable";
 import { articleListGet, sortTypePost } from "@/api/articale";
 export default {
   name: "Home",
+  filters: {
+    fmtime(val) {
+      return fmdata(val);
+    },
+  },
   data() {
     return {
       InfoShow: true,
@@ -147,12 +158,13 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style scoped lang="less">
 .rongqi {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
 }
 .cardStyl {
   cursor: pointer;
@@ -160,15 +172,53 @@ export default {
   height: 100%;
 }
 .col {
-  padding-top: 10px;
-  width: 330px;
+  padding: 10px 8px;
 }
 .cardBox {
-  padding: 10px;
-  height: 160px;
-
-  /* min-width: 340px; */
+  position: relative;
+  height: 110px;
+  margin: 8px 0px;
 }
+/deep/.ivu-card-body {
+  padding: 0px !important;
+}
+.articlBox {
+  display: flex;
+  .articlImg {
+    width: 120px;
+    overflow: hidden;
+    img {
+      width: 120px;
+      height: 108px;
+      border-bottom-left-radius: 4px;
+      border-top-left-radius: 4px;
+    }
+  }
+  .articlContent {
+    width: 190px;
+    padding: 10px;
+    .titles {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .abstract {
+      word-break: break-all;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+
+      overflow-y: hidden;
+    }
+    .timeText {
+      position: absolute;
+      bottom: 0;
+      font-size: 1px;
+      right: 3px;
+    }
+  }
+}
+
 .title {
   margin: 0px 8px;
   padding-top: 4px;

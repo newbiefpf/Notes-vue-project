@@ -27,3 +27,15 @@ export default {
   },
 };
 </script>
+<style scoped>
+.overflow-y-scroll::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+.overflow-y-scroll::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
+}
+</style>

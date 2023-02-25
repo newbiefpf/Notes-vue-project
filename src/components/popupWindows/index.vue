@@ -1,33 +1,31 @@
 <template>
   <!-- 遮罩层 self只是点击自己-->
-  <transition name="dialog-fade">
-    <div class="dialog_wrap" v-show="visible" @click.self="handleMaskClose">
-      <div class="dialog" :style="{ width, marginTop: top }">
-        <div class="bg-white dark:bg-dark-secondary z-50 rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600">
-          <div class="dialog_header">
-            <!-- 标题的具名插槽 不传值时候 直接取title 否者替换slot-->
-            <slot name="title">
-              <span class="dialog_header_title font-medium text-light-primary dark:text-dark-primary">{{ title }}</span>
-            </slot>
-            <!-- <button class="dialog_header_btn" @click="handleClose">
+  <div class="dialog_wrap" v-show="visible" @click.self="handleMaskClose">
+    <div class="dialog" :style="{ width, marginTop: top }">
+      <div class="bg-white dark:bg-dark-secondary z-50 rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600">
+        <div class="dialog_header">
+          <!-- 标题的具名插槽 不传值时候 直接取title 否者替换slot-->
+          <slot name="title">
+            <span class="dialog_header_title font-medium text-light-primary dark:text-dark-primary">{{ title }}</span>
+          </slot>
+          <!-- <button class="dialog_header_btn" @click="handleClose">
               <Icon type="md-close" class="font-medium text-light-primary dark:text-dark-primary" style="margin-right: 20px; cursor: pointer" />
             </button> -->
-          </div>
-          <div class="dialog_body">
-            <slot name="body">
-              <span>这是一条消息</span>
-            </slot>
-          </div>
-          <div class="dialog_footer">
-            <slot name="footer">
-              <button class="cancelBtn" @click="handleCancel">取消</button>
-              <button class="comfirmBtn" @click="handleComfirm">确定</button>
-            </slot>
-          </div>
+        </div>
+        <div class="dialog_body">
+          <slot name="body">
+            <span>这是一条消息</span>
+          </slot>
+        </div>
+        <div class="dialog_footer">
+          <slot name="footer">
+            <button class="cancelBtn" @click="handleCancel">取消</button>
+            <button class="comfirmBtn" @click="handleComfirm">确定</button>
+          </slot>
         </div>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script>
@@ -128,7 +126,6 @@ export default {
     box-sizing: border-box;
     width: 30%;
     .dialog_header {
-      padding: 20px 20px 10px;
       line-height: 24px;
       font-size: 18px;
       color: #303133;
@@ -152,13 +149,12 @@ export default {
       }
     }
     .dialog_body {
-      padding: 30px 20px;
+      padding: 10px 20px;
       color: #606266;
       font-size: 14px;
       word-break: break-all;
     }
     .dialog_footer {
-      padding: 10px 20px 20px;
       text-align: right;
       box-sizing: border-box;
     }

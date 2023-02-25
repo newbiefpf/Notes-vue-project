@@ -7,6 +7,12 @@ export function login (data) {
   });
 }
 
+export function chicken () {
+  return request({
+    url: '/chicken',
+    method: 'get',
+  });
+}
 
 export function ping () {
   return request({

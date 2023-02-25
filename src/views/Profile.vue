@@ -2,36 +2,66 @@
   <div>
     <div style="margin-top: 10px">
       <Form ref="dataInfo" :model="dataInfo" :rules="ruleCustom" :label-width="80">
-        <FormItem label="标题" prop="title">
-          <Input type="text" v-model="dataInfo.title" placeholder="请输入标题"></Input>
-        </FormItem>
-        <FormItem label="描述" prop="abstract">
-          <Input v-model="dataInfo.abstract" type="textarea" :autosize="{ minRows: 1, maxRows: 1 }" placeholder="请输入描述"></Input>
-        </FormItem>
-        <FormItem label="分类">
-          <Select v-model="dataInfo.classify" placeholder="请选择分类">
-            <Option value="1">New York</Option>
-            <Option value="2">London</Option>
-            <Option value="3">Sydney</Option>
-            <Option value="4">sadasff</Option>
-          </Select>
-        </FormItem>
-        <div class="quillEditorStyl font-medium text-light-primary dark:text-dark-primary">
-          <quillEditor
-            v-model="dataInfo.contentHtml"
-            ref="myQuillEditor"
-            :options="editorOption"
-            @change="onEditorChange($event)"
-            @keydown.ctrl.native="keyDown">
-          </quillEditor>
+        <Row>
+          <Col span="12">
+            <FormItem label="标题" prop="title">
+              <Input type="text" v-model="dataInfo.title" placeholder="请输入标题"></Input>
+            </FormItem>
+          </Col>
+          <Col span="12">
+            <FormItem label="分类">
+              <Select v-model="dataInfo.classify" placeholder="请选择分类">
+                <Option value="1">New York</Option>
+                <Option value="2">London</Option>
+                <Option value="3">Sydney</Option>
+                <Option value="4">sadasff</Option>
+              </Select>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="12">
+            <FormItem label="描述" prop="abstract">
+              <Input v-model="dataInfo.abstract" type="textarea" :autosize="{ minRows: 1, maxRows: 1 }" placeholder="请输入描述"></Input>
+            </FormItem>
+          </Col>
+          <Col span="12">
+            <FormItem label="封面">
+              <UploadImg @sendImgPath="getImgPath" />
+            </FormItem>
+          </Col>
+        </Row>
+
+        <div :class="[screenFullType ? 'quillEditorStyl' : '']" class="bg-white dark:bg-dark-secondary">
+          <div class="font-medium text-light-primary dark:text-dark-primary">
+            <div class="changeType">
+              <Tooltip content="全屏" placement="bottom" v-if="!screenFullType">
+                <Icon type="md-expand" size="24" @click="screenFull" class="iconOpt" />
+              </Tooltip>
+              <Tooltip content="取消全屏" placement="bottom" v-else>
+                <Icon type="md-contract" size="24" @click="screenFull" class="iconOpt" />
+              </Tooltip>
+              <Tooltip content="发布" placement="bottom">
+                <Icon type="md-cloud-upload" size="24" @click="handleSubmit('dataInfo')" class="iconOpt" />
+              </Tooltip>
+              <Tooltip content="清空" placement="bottom">
+                <Icon type="ios-close-circle" size="24" @click="handleReset('dataInfo')" class="iconOpt" />
+              </Tooltip>
+            </div>
+            <quillEditor
+              class="quillEditorBox"
+              :class="[screenFullType ? 'quillEditorMaxHeight' : 'quillEditorMinHeight']"
+              v-model="dataInfo.contentHtml"
+              ref="myQuillEditor"
+              :options="editorOption"
+              @change="onEditorChange($event)"
+              @keydown.ctrl.native="keyDown">
+            </quillEditor>
+          </div>
         </div>
-        <FormItem style="margin-top: 15px">
-          <Button @click="handleSubmit('dataInfo')">发布</Button>
-          <Button @click="handleReset('dataInfo')" style="margin-left: 8px">清空</Button>
-        </FormItem>
       </Form>
     </div>
-    <popup :visible.sync="modalType" :width="'40%'" :title="'清空提醒'" @handleCancel="modalType = false" @handleComfirm="deleteData">
+    <popup :visible.sync="modalType" :width="'25%'" :title="'清空提醒'" @handleCancel="modalType = false" @handleComfirm="deleteData">
       <template slot="body">
         <div class="font-medium text-light-primary dark:text-dark-primary">所有填写的类容将会被清空！！！</div>
       </template>
@@ -43,7 +73,7 @@
 import { quillEditor } from "vue-quill-editor";
 import popup from "@/components/popupWindows";
 import { articlePut, articleGet, articlePost } from "@/api/articale";
-
+import UploadImg from "@/components/Upload/index.vue";
 export default {
   name: "Profile",
   data() {
@@ -65,11 +95,12 @@ export default {
             [{ font: [] }], //字体
             [{ align: [] }], //对齐方式
 
-            ["image", "video"], //上传图片、上传视频
+            ["image"], //上传图片、上传视频
             ["clean"], //清除字体样式v
           ],
         },
       },
+      screenFullType: false,
       modalType: false,
       keyOne: null,
       dataInfo: {
@@ -86,7 +117,7 @@ export default {
       },
     };
   },
-  components: { quillEditor, popup },
+  components: { quillEditor, popup, UploadImg },
   computed: {
     editor() {
       return this.$refs.myQuillEditor.quill;
@@ -99,6 +130,12 @@ export default {
     this.getParams();
   },
   methods: {
+    getImgPath(url) {
+      this.dataInfo.imgUrl = url;
+    },
+    screenFull() {
+      this.screenFullType = !this.screenFullType;
+    },
     getParams() {
       this.articleId = this.$route.query.id;
       if (this.articleId) {
@@ -122,6 +159,7 @@ export default {
             articlePost(this.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);
+                vm.$router.push("/");
               } else {
                 vm.$Message.error(res.msg);
               }
@@ -130,13 +168,16 @@ export default {
             articlePut(vm.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);
+                vm.$router.push("/");
               } else {
                 vm.$Message.error(res.msg);
               }
             });
           }
+          this.dataInfo.imgUrl = "";
         } else {
-          debugger;
+          this.dataInfo.imgUrl = "";
+          return;
         }
       });
     },
@@ -172,7 +213,39 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.ql-container {
-  height: 300px !important;
+.changeType {
+  margin-left: 30px;
+  .iconOpt {
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+}
+.quillEditorMaxHeight {
+  height: 90vh !important;
+}
+.quillEditorMinHeight {
+  height: 50vh !important;
+  margin-bottom: 70px;
+}
+/deep/.ql-editor::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+/deep/.ql-editor::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
+}
+.quillEditorStyl {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 </style>

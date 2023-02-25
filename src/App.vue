@@ -8,16 +8,16 @@
         <TheHeader />
       </template>
       <template #content>
-        <transition name="fade" appear>
-          <div class="box">
-            <router-view class="m-2" />
-          </div>
-        </transition>
+        <!-- <transition name="fade" appear>
+          
+        </transition> 动画-->
+
+        <div class="box">
+          <router-view class="m-2" />
+        </div>
       </template>
       <template #sidebar>
-        <transition name="fade" appear>
-          <TheSidebar />
-        </transition>
+        <TheSidebar />
       </template>
       <template #pages>
         <TheLandingPages />
@@ -81,6 +81,7 @@ export default {
 </script>
 <style lang="less">
 .box {
+  padding-bottom: 20px;
   overflow-y: auto;
 }
 .box::-webkit-scrollbar {
@@ -89,6 +90,16 @@ export default {
   border-radius: 6px;
 }
 .box::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
+}
+main::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+main::-webkit-scrollbar-thumb {
   background: #aaa !important;
   height: 6px !important;
   border-radius: 6px;

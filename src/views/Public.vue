@@ -1,19 +1,8 @@
 <template>
   <div>
     <div v-if="InfoShow">
-      <div>
-        <Card class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStylHead">
-          <div style="text-align: center">
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
-          </div>
-        </Card>
-      </div>
-      <div>
-        <Card class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStylTitle">
-          <div style="text-align: center">
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
-          </div>
-        </Card>
+      <div class="cardStylHead">
+        <loopImg :height="'320px'" :delay="8000" />
       </div>
       <div>
         <div
@@ -60,7 +49,7 @@
 
 <script>
 import Info from "@/components/info";
-
+import loopImg from "@/components/loop";
 import chitchat from "@/components/chitchat";
 export default {
   name: "Public",
@@ -186,6 +175,7 @@ export default {
   components: {
     chitchat,
     Info,
+    loopImg,
   },
   methods: {
     openInfo() {
@@ -204,8 +194,12 @@ export default {
 };
 </script>
 <style lang="less">
+.ivu-card-body {
+  padding: 0;
+  overflow: hidden;
+}
 .cardStylHead {
-  height: 160px;
+  height: 320px;
   margin-bottom: 6px;
 }
 .cardStylTitle {
