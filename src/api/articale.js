@@ -46,3 +46,16 @@ export function sortTypePost (data) {
     data
   });
 }
+
+export function articleAllList () {
+  return request({
+    url: '/articleList',
+    method: 'get',
+  });
+}
+export function articleDiscuss (data) {
+  return request({
+    url: '/api/articleDiscuss/' + data.articleId,
+    method: 'get',
+  });
+}

@@ -1,15 +1,17 @@
 <template>
   <div>
     <div class="commentBox">
-      <div class="commentPer">{{ imgUrl }}</div>
+      <div class="commentPer">
+        <Avatar size="50" :src="imgUrl">USER</Avatar>
+      </div>
       <div class="commentInfo">
         <div class="commentOption">
           <div class="name">
-            {{ name }}<span v-if="parent">回复{{ parent.name }}</span>
+            {{ name }}</span>
           </div>
-          <div class="time">{{ dataTime }}</div>
+          <div class="time">{{ dataTime | fmtime }}</div>
           <div class="report" @click="report">举报</div>
-          <div class="reply" @click="reply">回复</div>
+          <div class="reply" @click="reply()" v-if="!parent">回复</div>
           <div class="like" @click="like">点赞</div>
         </div>
 
@@ -23,11 +25,15 @@
 </template>
 
 <script>
+import { fmdata } from "@/utils/formatDate.js";
 export default {
   name: "chitchat",
   props: {
     parent: {
-      type: Object,
+      type: Number,
+    },
+    replyId: {
+      type: Number,
     },
     imgUrl: {
       type: String,
@@ -46,13 +52,19 @@ export default {
       default: "评论时间",
     },
   },
-
+  filters: {
+    fmtime(val) {
+      return fmdata(val);
+    },
+  },
   data() {
     return {};
   },
   methods: {
     report() {},
-    reply() {},
+    reply() {
+      this.$emit("replyMessage",this.replyId)
+    },
     like() {},
   },
 };
@@ -64,10 +76,6 @@ export default {
   padding: 12px 8px;
   width: 100%;
   .commentPer {
-    border: 1px red solid;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
     margin-right: 6px;
     overflow: hidden;
   }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="demo-upload-list" v-for="item in uploadList">
-      <template v-if="item.status === 'finished'">
+      <template v-if="item.status === 'finished' && item.response.data[0] != ''">
         <img :src="item.response.data[0]" fit="cover" width="100%" height="100%" />
         <div class="demo-upload-list-cover">
           <Icon type="ios-trash-outline" @click="handleRemove(item)"></Icon>

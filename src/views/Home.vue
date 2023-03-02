@@ -1,6 +1,6 @@
 <template>
   <div>
-    <figure v-if="InfoShow" class="md:flex rounded-xl p-8 md:p-0">
+    <figure v-if="InfoShow">
       <div class="rongqi">
         <div class="col" v-for="(item, index) in list" :key="index">
           <div class="title">
@@ -36,7 +36,10 @@
                         <div class="font-medium text-light-primary dark:text-dark-primary abstract">
                           {{ child.abstract }}
                         </div>
-                        <div class="font-medium text-light-primary dark:text-dark-primary timeText">发布时间： {{ child.created_at | fmtime }}</div>
+                        <div class="font-medium text-light-primary dark:text-dark-primary timeText">
+                          <Tag color="success" v-if="child.public">共享</Tag> <Tag color="error" v-else>私有</Tag>发布时间：
+                          {{ child.created_at | fmtime }}
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -162,13 +165,13 @@ export default {
 .rongqi {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  margin: 0 auto;
+  // margin: 0 auto;
 }
 .cardStyl {
   cursor: pointer;
-  width: 320px;
+  width: 340px;
   height: 100%;
 }
 .col {

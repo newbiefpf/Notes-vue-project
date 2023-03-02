@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="InfoShow">
+    <div>
       <div class="cardStylHead">
         <loopImg :height="'320px'" :delay="8000" />
       </div>
@@ -9,181 +9,71 @@
           class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl"
           v-for="item in articleList"
           :key="item.id"
-          @click="openInfo">
+          @click="openInfo(item)">
           <div class="articleGroup">
-            <div class="articleImg"></div>
+            <div class="articleImg">
+              <img :src="item.imgUrl" alt="出错啦！" />
+            </div>
             <div class="articleContent">
-              <div class="articleTitle">{{ item.title }}</div>
-              <div class="articleDescribe"></div>
+              <div class="articleTitle">文章：{{ item.title }}</div>
+              <div class="articleDescribe">简介： {{ item.abstract }}</div>
               <div class="articleBox">
-                <div class="articleBoxItem">{{ item.details.uloadTime }}</div>
-                <div class="articleBoxItem">热度{{ item.details.visitor }}</div>
-                <div class="articleBoxItem" @click.stop="drawerOpen(item.details)">评论{{ item.details.commentList.length }}</div>
-                <div class="articleBoxItem" @click.stop="">喜欢{{ item.details.like }}</div>
+                <div class="articleBoxItem">{{ item.CreatedAt | fmtime }}</div>
+                <div class="articleBoxItem">热度{{ item.userId }}</div>
+                <div class="articleBoxItem">评论{{ item.ArticleLink.length }}</div>
+                <div class="articleBoxItem">喜欢{{ item.ArticleLink.length }}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <Drawer :closable="false" v-model="drawerShow" placement="right" width="25">
-        <div :class="[theme == 'dark' ? 'bg-dark-secondary' : 'bg-light-primary']" class="drawerSty">
-          <div>
-            <h1>评论</h1>
-          </div>
-          <div v-for="item in commentList" :key="item.id">
-            <chitchat :imgUrl="item.imgUrl" :content="item.remark" :name="item.name" :dataTime="item.remarkTime">
-              <div v-for="y in item.discuss" :key="y.id" slot="childchitchat">
-                <chitchat :imgUrl="y.imgUrl" :content="y.remark" :name="y.name" :dataTime="y.remarkTime" :parent="y.parent"> </chitchat>
-              </div>
-            </chitchat>
-          </div>
-        </div>
-      </Drawer>
     </div>
-
-    <figure v-else class="md:flex rounded-xl p-8 md:p-0">
-      <Info />
-    </figure>
+    <div v-if="InfoShow">
+      <publicInfo :InfoShow.sync="InfoShow" :articleInfo="articleInfo" />
+    </div>
   </div>
 </template>
 
 <script>
-import Info from "@/components/info";
+import publicInfo from "@/components/publicInfo";
 import loopImg from "@/components/loop";
-import chitchat from "@/components/chitchat";
+import { fmdata } from "@/utils/formatDate.js";
+import { articleAllList } from "@/api/articale";
 export default {
   name: "Public",
+  filters: {
+    fmtime(val) {
+      return fmdata(val);
+    },
+  },
   data() {
     return {
-      InfoShow: true,
-      articleList: [
-        {
-          id: 1,
-          imgUrl: "",
-          describe: "",
-          title: "袜子撒",
-          details: {
-            uloadTime: "2023-02-06",
-            visitor: 12,
-            commentList: [
-              {
-                usrId: 1,
-                name: "cs",
-                remark: "这是一条评论",
-                remarkTime: "2023-02-06",
-                imgUrl: "cs",
-                discuss: [
-                  {
-                    usrId: 2,
-                    name: "cs1",
-                    remark: "这是一条回复",
-                    remarkTime: "2023-02-06",
-                    imgUrl: "cs1",
-                    parent: {
-                      usrId: 1,
-                      name: "cs",
-                    },
-                  },
-                ],
-              },
-              {
-                usrId: 3,
-                name: "cs",
-                remark: "这是一条评论",
-                remarkTime: "2023-02-06",
-                imgUrl: "cs",
-                discuss: [
-                  {
-                    usrId: 2,
-                    name: "cs1",
-                    remark: "这是一条回复",
-                    remarkTime: "2023-02-06",
-                    imgUrl: "cs1",
-                    parent: {
-                      usrId: 3,
-                      name: "cs",
-                    },
-                  },
-                ],
-              },
-            ],
-            like: 110,
-          },
-        },
-        {
-          id: 2,
-          imgUrl: "",
-          describe: "",
-          title: "大商股份",
-          details: {
-            uloadTime: "",
-            visitor: 12,
-            commentList: [
-              {
-                usrId: 4,
-                name: "cs",
-                remark: "这是一条评论",
-                remarkTime: "2023-02-06",
-              },
-            ],
-            like: 110,
-          },
-        },
-        {
-          id: 3,
-          imgUrl: "",
-          describe: "",
-          title: "俺是个风格的",
-          details: {
-            uloadTime: "",
-            visitor: 12,
-            commentList: [
-              {
-                usrId: 5,
-                name: "cs",
-                remark: "这是一条评论",
-                remarkTime: "2023-02-06",
-              },
-            ],
-            like: 110,
-          },
-        },
-        {
-          id: 4,
-          imgUrl: "",
-          describe: "",
-          title: "鱼体一天的规范化",
-          details: {
-            uloadTime: "",
-            visitor: 12,
-            commentList: [
-              {
-                usrId: 6,
-                name: "cs",
-                remark: "这是一条评论",
-                remarkTime: "2023-02-06",
-              },
-            ],
-            like: 110,
-          },
-        },
-      ],
+      InfoShow: false,
+      articleList: [],
       commentList: [],
-      drawerShow: false,
+      articleInfo: {},
     };
   },
   components: {
-    chitchat,
-    Info,
+    publicInfo,
     loopImg,
   },
+  created() {
+    this.getDate();
+  },
   methods: {
-    openInfo() {
-      this.InfoShow = false;
+    getDate() {
+      articleAllList().then((res) => {
+        if (res.code == 200) {
+          this.articleList = res.data.list;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
-    drawerOpen(data) {
-      this.commentList = data.commentList;
-      this.drawerShow = true;
+    openInfo(item) {
+      this.articleInfo = item;
+      this.InfoShow = true;
     },
   },
   computed: {
@@ -211,6 +101,12 @@ export default {
   cursor: pointer;
   margin-bottom: 8px;
   height: 120px;
+  border-radius: 4px;
+  &:hover {
+    margin-top: 0px; /*和hover的margin-top有对比，原无30,现在0，相当于上移了,30px*/
+    box-shadow: 0 0 20px 2px #918f8f; /*盒子阴影*/
+    transition: all 0.5s; /*持续时间*/
+  }
 }
 .articleGroup {
   display: flex;
@@ -218,7 +114,12 @@ export default {
   .articleImg {
     width: 25%;
     height: 120px;
-    border: 1px red solid;
+    img {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      width: 100%;
+      height: 100%;
+    }
   }
   .articleContent {
     width: 75%;
@@ -226,17 +127,15 @@ export default {
       padding-left: 10%;
       height: 30px;
       line-height: 30px;
-      border: 1px red solid;
     }
     .articleDescribe {
       height: 60px;
-      border: 1px red solid;
+      padding-left: 8px;
     }
     .articleBox {
       display: flex;
       align-items: center;
       height: 30px;
-      border: 1px red solid;
       .articleBoxItem {
         text-align: center;
         width: 25%;

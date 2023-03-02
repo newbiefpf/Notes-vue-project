@@ -25,9 +25,22 @@
               <Input v-model="dataInfo.abstract" type="textarea" :autosize="{ minRows: 1, maxRows: 1 }" placeholder="请输入描述"></Input>
             </FormItem>
           </Col>
-          <Col span="12">
+
+          <Col span="5">
+            <FormItem label="共享发布">
+              <i-switch v-model="dataInfo.public" size="large">
+                <template #open>
+                  <span>On</span>
+                </template>
+                <template #close>
+                  <span>Off</span>
+                </template>
+              </i-switch>
+            </FormItem>
+          </Col>
+          <Col span="7">
             <FormItem label="封面">
-              <UploadImg @sendImgPath="getImgPath" />
+              <UploadImg @sendImgPath="getImgPath" :imgList="defaultImgUrlList" />
             </FormItem>
           </Col>
         </Row>
@@ -109,7 +122,9 @@ export default {
         abstract: null,
         contentHtml: null,
         classify: "1",
+        public: true,
       },
+      defaultImgUrlList: [],
       articleId: null,
       ruleCustom: {
         abstract: [{ required: true, message: "文章描述必填", trigger: "blur" }],
@@ -145,6 +160,13 @@ export default {
             this.dataInfo.abstract = res.data.abstract;
             this.dataInfo.contentHtml = res.data.contentHtml;
             this.dataInfo.classify = res.data.classify;
+            this.dataInfo.public = res.data.public;
+            this.dataInfo.imgUrl = res.data.imgUrl;
+            if (res.data.imgUrl != "") {
+              this.defaultImgUrlList[0].response.data.push(res.data.imgUrl);
+            }
+          } else {
+            this.$Message.error(res.msg);
           }
         });
       }
@@ -154,8 +176,9 @@ export default {
       vm.$refs[name].validate((valid) => {
         if (valid) {
           vm.dataInfo.userId = vm.userInfo.ID;
+
           if (vm.articleId) {
-            vm.dataInfo.id = Number(vm.articleId);
+            // vm.dataInfo.id = Number(vm.articleId);
             articlePost(this.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);
@@ -198,7 +221,7 @@ export default {
       console.log(this.dataInfo.contentHtml);
     },
     onEditorChange({ quill, html, text }) {
-      console.log(quill, html, text);
+      // console.log(quill, html, text);
       this.dataInfo.contentHtml = html;
     },
   },

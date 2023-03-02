@@ -16,6 +16,7 @@
 
     <div class="flex-1 flex flex-row max-w-screen-lg w-full mx-auto gap-x-3 md:py-3 overflow-y-hidden">
       <nav
+        style="z-index: 10"
         class="fixed h-full md:bg-transparent dark:md:bg-transparent md:border-0 md:relative md:w-1/5 order-first overflow-y-auto md:transition-none transition-[width] duration-500 ease-in-out"
         :class="{
           'bg-white dark:bg-dark-secondary w-60 border-r border-gray-100 dark:border-gray-600': mobileMenuIsOpen,

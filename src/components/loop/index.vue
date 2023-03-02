@@ -2,9 +2,9 @@
   <div :style="newStyle">
     <swiper class="swiper" :options="swiperOption">
       <swiper-slide v-for="(slide, key) in swiperList" :key="key">
-        <img :src="slide" alt="" />
+        <!-- <img :src="slide" alt="" /> -->
+        <img src="@/assets/photo.jpeg" alt="出错了" />
       </swiper-slide>
-      <div>213</div>
       <div class="swiper-pagination" slot="pagination"></div>
       <div class="swiper-button-prev" slot="button-prev" v-show="option"></div>
       <div class="swiper-button-next" slot="button-next" v-show="option"></div>
@@ -27,12 +27,13 @@ export default {
       type: Array,
       default: function () {
         return [
-          "https://images.pexels.com/photos/1438994/pexels-photo-1438994.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://images.pexels.com/photos/3466355/pexels-photo-3466355.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://images.pexels.com/photos/775201/pexels-photo-775201.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://images.pexels.com/photos/105075/pexels-photo-105075.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://images.pexels.com/photos/142497/pexels-photo-142497.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://images.pexels.com/photos/338936/pexels-photo-338936.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          "@/assets/photo.jpeg",
+          // "https://images.pexels.com/photos/1438994/pexels-photo-1438994.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          // "https://images.pexels.com/photos/3466355/pexels-photo-3466355.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          // "https://images.pexels.com/photos/775201/pexels-photo-775201.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          // "https://images.pexels.com/photos/105075/pexels-photo-105075.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          // "https://images.pexels.com/photos/142497/pexels-photo-142497.jpeg?auto=compress&cs=tinysrgb&w=1600",
+          // "https://images.pexels.com/photos/338936/pexels-photo-338936.jpeg?auto=compress&cs=tinysrgb&w=1600",
         ];
       },
     },
@@ -92,7 +93,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .swiper {
   height: 100%;
   width: 100%;
