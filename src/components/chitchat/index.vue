@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="commentBox">
+    <div class="commentBox" :style="parent==null ?'border-bottom:silver 1px solid;':''">
       <div class="commentPer">
-        <Avatar size="50" :src="imgUrl">USER</Avatar>
+        <Avatar size="50" :src="imgUrl">佚名</Avatar>
       </div>
       <div class="commentInfo">
         <div class="commentOption">
@@ -11,8 +11,8 @@
           </div>
           <div class="time">{{ dataTime | fmtime }}</div>
           <div class="report" @click="report">举报</div>
-          <div class="reply" @click="reply()" v-if="!parent">回复</div>
-          <div class="like" @click="like">点赞</div>
+          <div class="reply" @click="reply">回复</div>
+          <div class="like" @click="like">私信</div>
         </div>
 
         <div>
@@ -25,10 +25,14 @@
 </template>
 
 <script>
+
 import { fmdata } from "@/utils/formatDate.js";
 export default {
   name: "chitchat",
   props: {
+    userId:{
+      type: Number,
+    },
     parent: {
       type: Number,
     },
@@ -58,19 +62,38 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+     
+      personalLetter:"",
+    };
+  },
+    computed: {
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
   },
   methods: {
     report() {},
-    reply() {
-      this.$emit("replyMessage",this.replyId)
+    sendToUser(){
+      console.log(this.personalLetter,213);
     },
-    like() {},
+    reply() {
+      if (this.parent) {
+         this.$emit("replyMessage",this.parent,this.name)
+      }else{
+         this.$emit("replyMessage",this.replyId,this.name)
+      }
+     
+    },
+    like() {
+        this.$emit("sendLetter",this.userId,this.name)
+    },
   },
 };
 </script>
 <style lang="less">
 .commentBox {
+  
   display: flex;
   align-items: flex-start;
   padding: 12px 8px;

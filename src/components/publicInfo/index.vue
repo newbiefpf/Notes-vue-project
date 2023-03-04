@@ -74,51 +74,84 @@
         </div>
       </div>
     </div>
-    <Drawer :closable="false" v-model="drawerShow" placement="right" width="25">
+    <Drawer :closable="false" v-model="drawerShow" placement="right" width="30">
       <div :class="[theme == 'dark' ? 'bg-dark-secondary' : 'bg-light-primary']" class="drawerSty">
         <div>
-          <h1>评论</h1>
+          <h1>评论列表</h1>
         </div>
         <div>
-          <div v-for="item in commentList" :key="item.ID">
-            <chitchat
-              @replyMessage="replyMessage"
-              :imgUrl="item.avatar"
-              :content="item.comment"
-              :name="item.name"
-              :dataTime="item.CreatedAt"
-              :replyId="item.ID">
-              <div v-for="child in item.children" :key="child.ID" slot="childchitchat">
-                <chitchat :imgUrl="child.imgUrl" :content="child.comment" :name="child.name" :dataTime="child.CreatedAt" :parent="child.father_id">
-                </chitchat>
-              </div>
-            </chitchat>
+          <div class="replyList">
+            <div v-for="item in commentList" :key="item.ID">
+              <chitchat
+                @replyMessage="replyMessage"
+                @sendLetter="sendLetter"
+                :imgUrl="item.avatar"
+                :content="item.comment"
+                :name="item.name"
+                :dataTime="item.CreatedAt"
+                :replyId="item.ID"
+                :userId="item.user_id">
+                <div v-for="child in item.children" :key="child.ID" slot="childchitchat">
+                  <chitchat
+                    @replyMessage="replyMessage"
+                    @sendLetter="sendLetter"
+                    :imgUrl="child.imgUrl"
+                    :content="child.comment"
+                    :name="child.name"
+                    :dataTime="child.CreatedAt"
+                    :parent="child.father_id"
+                    :replyId="child.ID"
+                    :userId="child.user_id">
+                  </chitchat>
+                </div>
+              </chitchat>
+            </div>
           </div>
-          <div>
-            <input v-model="valueMessage" />
-            <button>{{ valueMessage }}</button>
+          <div class="bg-white dark:bg-dark-secondary shadow-sm flex border-b border-gray:100 dark:border-gray-600 replyBox">
+            <button @click="sendMessage" class="bg-sky-blue dark:bg-dark-primary px-7 rounded-md text-white flex items-center gap-3">发表</button>
+            <input
+              type="search"
+              v-model="valueMessage"
+              class="block px-4 py-1.5 text-base font-normal text-light-primary dark:text-white bg-light-primary dark:bg-dark-primary bg-clip-padding rounded-md transition ease-in-out m-0 dark:focus:text-white focus:border-sky-blue focus:outline-none"
+              placeholder="@发表评论" />
+            <div style="width: 180px" class="flex items-center">
+              <div v-show="returnText != ''">
+                {{ returnText }} &nbsp;&nbsp;&nbsp;&nbsp;<Icon type="md-close-circle" style="cursor: pointer" @click="clearPerson" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </Drawer>
+    <popup :visible.sync="modalType" :width="'40%'" :title="`私信给${sendUser.name}`" @handleCancel="modalType = false" @handleComfirm="sendToUser">
+      <template slot="body">
+        <div class="font-medium text-light-primary dark:text-dark-primary">
+          <Input v-model="personalLetter" type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" />
+        </div>
+      </template>
+    </popup>
   </div>
 </template>
 <script>
 import UiTitle from "@/components/ui/UiTitle";
 import chitchat from "@/components/chitchat";
-import { articleDiscuss } from "@/api/articale";
+import { articleDiscuss, articleDiscussPut } from "@/api/articale";
+import popup from "@/components/popupWindows";
 import { fmdata } from "@/utils/formatDate.js";
 export default {
   name: "Public",
   data() {
     return {
       htmlText: "",
-      modalType: false,
       commentList: [],
       screenFullType: true,
       drawerShow: false,
       replyMessageBox: false,
       valueMessage: "",
+      returnText: "",
+      fatherId: null,
+      modalType: false,
+      sendUser: {},
     };
   },
   filters: {
@@ -137,33 +170,77 @@ export default {
       type: Object,
     },
   },
-  components: { UiTitle, chitchat },
+  components: { UiTitle, chitchat, popup },
   computed: {
     theme() {
       return this.$store.state.theme;
+    },
+    userInfo() {
+      return this.$store.getters.userInfo;
     },
   },
   created() {
     this.getArticleDiscuss();
   },
   methods: {
-    replyMessage(id) {
+    clearPerson() {
+      this.returnText = "";
+      this.fatherId = null;
+    },
+    sendLetter(id, name) {
+      this.drawerShow = false;
+      this.sendUser = {
+        id,
+        name,
+      };
+      this.modalType = true;
+    },
+    replyMessage(id, name) {
+      this.returnText = `@${name}：`;
+      console.log("回复的id", id, name);
       if (id) {
-        this.replyMessageBox = true;
+        this.fatherId = id;
+      } else {
+        this.fatherId = null;
       }
-      console.log("回复的id", id);
+    },
+    sendMessage() {
+      if (this.valueMessage == "") {
+        this.$Message.info("请输入评论类容！！！");
+      } else {
+        let data = {
+          article_link_id: this.articleInfo.ID,
+          father_id: this.fatherId,
+          name: this.userInfo.name,
+          avatar: this.userInfo.avatar || "https://i.loli.net/2017/08/21/599a521472424.jpg",
+          comment: this.returnText + this.valueMessage,
+        };
+        articleDiscussPut(data).then((res) => {
+          if (res.code == 200) {
+            this.clearPerson();
+            this.valueMessage = "";
+            this.getArticleDiscuss();
+            this.$Message.success("发表成功,等待审核中！！！");
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
+      }
     },
     changeInfoShow() {
       this.$emit("update:InfoShow", false);
     },
     getArticleDiscuss() {
+      this.commentList = [];
       articleDiscuss({ articleId: this.articleInfo.ID }).then((res) => {
-        console.log(res);
         if (res.code == 200) {
           res.data.forEach((item) => {
             if (!item.father_id) {
               this.commentList.push({ ...item, children: [] });
             }
+          });
+          this.commentList.sort((a, b) => {
+            return b.ID - a.ID;
           });
           res.data.forEach((x) => {
             if (x.father_id) {
@@ -171,13 +248,20 @@ export default {
                 if (x.father_id == y.ID) {
                   y.children.push(x);
                 }
+                y.children.sort((a, b) => {
+                  return b.ID - a.ID;
+                });
               });
             }
           });
-          console.log(this.commentList, 123);
+
+          console.log(this.commentList);
+        } else {
+          this.$Message.error(res.msg);
         }
       });
     },
+
     drawerOpen() {
       this.drawerShow = true;
     },
@@ -205,6 +289,7 @@ export default {
   width: 100%;
   justify-content: center;
   .body-left {
+    opacity: 85%;
     // background-color: aquamarine;
     height: 300px;
     width: 15%;
@@ -223,6 +308,7 @@ export default {
     cursor: pointer;
   }
   .body-center {
+    opacity: 85%;
     width: 50%;
     height: 88vh;
     margin: 0px 10px;
@@ -238,6 +324,7 @@ export default {
   }
 
   .body-right {
+    opacity: 85%;
     // background-color: rgb(51, 23, 112);
     width: 15%;
     img {
@@ -254,5 +341,18 @@ export default {
 }
 .drawerSty {
   height: 100%;
+}
+.replyList {
+  overflow: hidden;
+  padding-bottom: 100px;
+}
+.replyBox {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  padding: 8px 4px;
+  input {
+    margin-left: 20px;
+  }
 }
 </style>

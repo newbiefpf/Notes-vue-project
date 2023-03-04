@@ -59,3 +59,11 @@ export function articleDiscuss (data) {
     method: 'get',
   });
 }
+
+export function articleDiscussPut (data) {
+  return request({
+    url: '/api/articleDiscuss',
+    method: 'put',
+    data
+  });
+}

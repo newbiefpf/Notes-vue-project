@@ -82,7 +82,7 @@ export default {
   mounted() {
     var vm = this;
     document.onkeydown = function (e) {
-      console.log(e);
+      // console.log(e);
       if (e.key == "Escape") {
         vm.handleCancel();
       }

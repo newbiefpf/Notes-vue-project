@@ -19,9 +19,9 @@
               <div class="articleDescribe">简介： {{ item.abstract }}</div>
               <div class="articleBox">
                 <div class="articleBoxItem">{{ item.CreatedAt | fmtime }}</div>
-                <div class="articleBoxItem">热度{{ item.userId }}</div>
-                <div class="articleBoxItem">评论{{ item.ArticleLink.length }}</div>
-                <div class="articleBoxItem">喜欢{{ item.ArticleLink.length }}</div>
+                <div class="articleBoxItem">热度{{ item.ArticleLink.hot }}</div>
+                <div class="articleBoxItem">评论{{ item.ArticleLink.discussCount }}</div>
+                <div class="articleBoxItem">喜欢{{ item.ArticleLink.giveLike }}</div>
               </div>
             </div>
           </div>
@@ -65,6 +65,7 @@ export default {
     getDate() {
       articleAllList().then((res) => {
         if (res.code == 200) {
+          debugger;
           this.articleList = res.data.list;
         } else {
           this.$Message.error(res.msg);
@@ -83,7 +84,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .ivu-card-body {
   padding: 0;
   overflow: hidden;
