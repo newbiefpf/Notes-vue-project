@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import user from "./modules/user";
+import wsData from "./modules/wsData";
 import getters from "./getters";
 
 Vue.use(Vuex);
@@ -9,6 +10,7 @@ export default new Vuex.Store({
 
   modules: {
     user,
+    wsData,
   },
   // =====配置=====
   state: {

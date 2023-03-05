@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="userInfo">
-      <router-link to="/" class="flex gap-x-3 items-center justify-center">
+      <router-link to="/home" class="flex gap-x-3 items-center justify-center">
         <div class="headImg">
           <img src="@/assets/photo.jpeg" alt="出错了" srcset="" />
         </div>
@@ -134,6 +134,10 @@ export default {
               this.$Message.success("登录成功!");
               this.$store.dispatch("user/refreshToken", res.data.token);
               this.$store.dispatch("user/refreshUserInfo", res.data.user);
+              this.$router.replace({ path: "/home" });
+              setTimeout(() => {
+                this.$initWs.init();
+              }, 1000);
             } else {
               this.$Message.error(res.msg);
             }

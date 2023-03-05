@@ -65,7 +65,6 @@ export default {
     getDate() {
       articleAllList().then((res) => {
         if (res.code == 200) {
-          debugger;
           this.articleList = res.data.list;
         } else {
           this.$Message.error(res.msg);

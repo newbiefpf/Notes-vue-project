@@ -3,12 +3,12 @@ import {
   getToken,
   setToken,
   getUserInfo,
-  setUserInfo
+  setUserInfo,
 } from "@/utils/auth.js";
 // 状态
 const state = {
   access_token: getToken(),
-  userInfo: null, //用户信息
+  userInfo: getUserInfo() || null, //用户信息
 };
 // 修改状态
 const mutations = {

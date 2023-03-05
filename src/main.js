@@ -7,6 +7,7 @@ import { Message } from 'view-design';
 import { ClickOutside } from "./directives/click-outside.js";
 import { Plugin } from "vue-fragment";
 import { IconsPlugin } from "@/plugins/icons-plugin";
+import { socket } from "./config/websocket"; //websocket
 import VueRouter from "vue-router";
 import VueQuillEditor from 'vue-quill-editor'
 import 'view-design/dist/styles/iview.css';
@@ -22,6 +23,7 @@ Vue.use(ViewUI);
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(VueQuillEditor);
+Vue.prototype.$initWs = socket; //websocket
 new Vue({
   router,
   store,

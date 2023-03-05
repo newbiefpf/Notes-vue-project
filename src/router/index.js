@@ -18,7 +18,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 这里依据 token 判断是否登录，可视情况修改
   const token = store.getters.access_token;
-  if (token && token != "") {
+  const userInfo = store.getters.userInfo;
+  if (token && token != "" && userInfo && userInfo.ID) {
     next();
   } else {
     store.commit('user/refreshUserInfo', "")

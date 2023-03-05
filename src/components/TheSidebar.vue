@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <UiSidebar class="m-2">
-      <UiSidebarItem to="/" name="笔记主页" icon="home" />
+      <UiSidebarItem to="/home" name="笔记主页" icon="home" />
       <UiSidebarItem to="/profile" name="笔记发布" icon="user" />
       <UiSidebarItem to="/messages" name="消息通知" icon="envelope" />
       <UiSidebarItem to="/public" name="共享笔记" icon="comment" />

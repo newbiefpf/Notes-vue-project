@@ -67,15 +67,25 @@ export default {
 
   created() {
     this.$store.dispatch("InitTheme");
-    ping().then((res) => {
-      if (res.code == 200) {
-        this.$store.commit("user/getUserInfo");
-        this.$store.dispatch("InitLayout");
-      } else {
-        this.$store.commit("SetLayout", layouts.landing);
-        this.$store.dispatch("user/refreshToken", "");
-      }
-    });
+    let userInfo = this.$store.getters.userInfo;
+    if (userInfo && userInfo.ID) {
+      ping().then((res) => {
+        if (res.code == 200) {
+          this.$store.commit("user/getUserInfo");
+          this.$store.dispatch("InitLayout");
+          this.$initWs.init();
+        } else {
+          this.$store.commit("SetLayout", layouts.landing);
+          this.$store.dispatch("user/refreshToken", "");
+        }
+      });
+    } else {
+      this.$store.commit("SetLayout", layouts.landing);
+      this.$store.dispatch("user/refreshToken", "");
+    }
+  },
+  beforeDestroy() {
+    this.$initWs.close();
   },
 };
 </script>

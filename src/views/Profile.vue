@@ -182,7 +182,7 @@ export default {
             articlePost(this.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);
-                vm.$router.push("/");
+                vm.$router.push("/home");
               } else {
                 vm.$Message.error(res.msg);
               }
@@ -191,7 +191,7 @@ export default {
             articlePut(vm.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);
-                vm.$router.push("/");
+                vm.$router.push("/home");
               } else {
                 vm.$Message.error(res.msg);
               }
