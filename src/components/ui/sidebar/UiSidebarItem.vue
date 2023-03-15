@@ -5,7 +5,7 @@
     :to="to">
     <v-icon :name="icon" class="w-4 h-4 fill-current" />
     <p>{{ name }}</p>
-    <Badge :count="2" v-if="name == '消息通知'" style="margin-left: 18px">
+    <Badge :count="messageCountw" v-if="name == '消息通知'" style="margin-left: 18px">
       <a href="#" class="demo-badge"></a>
     </Badge>
   </router-link>
@@ -29,11 +29,24 @@ export default {
       required: true,
     },
   },
-
+  data() {
+    return {
+      messageCount: 0,
+    };
+  },
   computed: {
     isActive() {
       return this.to === this.$route.path;
     },
+    messageCountw() {
+      return this.$store.getters.unRead || 0;
+    },
+  },
+  watch: {
+    // 监听websocket返回的信息
+    // "$store.state.article.unread"(count) {
+    //   this.messageCount = count;
+    // },
   },
 };
 </script>

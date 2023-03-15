@@ -178,7 +178,7 @@ export default {
           vm.dataInfo.userId = vm.userInfo.ID;
 
           if (vm.articleId) {
-            // vm.dataInfo.id = Number(vm.articleId);
+            vm.dataInfo.id = Number(vm.articleId);
             articlePost(this.dataInfo).then((res) => {
               if (res.code == 200) {
                 vm.$Message.success(res.msg);

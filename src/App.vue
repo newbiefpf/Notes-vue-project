@@ -64,7 +64,82 @@ export default {
       return availableLayouts[currentLayout];
     },
   },
-
+  watch: {
+    // 监听websocket返回的信息
+    "$store.state.wsData"(data) {
+      switch (data.type) {
+        case "oneself":
+          this.$store.commit("article/handleUnread", data.messageCount);
+          break;
+        case "test":
+          console.log("ping", data);
+          break;
+        case "discuss":
+          this.$store.commit("article/handleUnread", data.messageCount);
+          this.$Notice.info({
+            title: "评论",
+            desc: data.content,
+            duration: 30,
+            render: (h) => {
+              return h("span", [
+                `${data.content}  >  `,
+                h(
+                  "a",
+                  {
+                    attrs: {
+                      href: "messages",
+                    },
+                  },
+                  "查看详情",
+                ),
+              ]);
+            },
+          });
+          break;
+        case "system":
+          this.$Notice.warning({
+            title: "管理员提醒",
+            desc: data.content,
+            duration: 0,
+          });
+          break;
+        case "personal_letter":
+          this.$Notice.info({
+            title: "私信提醒",
+            desc: data.content,
+            duration: 30,
+            render: (h) => {
+              return h("span", [
+                `${data.content}  >  `,
+                h(
+                  "a",
+                  {
+                    attrs: {
+                      href: "messages",
+                    },
+                  },
+                  "查看详情",
+                ),
+              ]);
+            },
+          });
+          break;
+        default:
+          var data = {
+            msg: {
+              chat_msg_type: 2,
+              data: {
+                to_user_id: this.$store.getters.userInfo.ID,
+                content: "ping",
+                type: "test",
+              },
+            },
+          };
+          this.$initWs.send(data);
+          break;
+      }
+    },
+  },
   created() {
     this.$store.dispatch("InitTheme");
     let userInfo = this.$store.getters.userInfo;

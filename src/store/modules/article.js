@@ -1,12 +1,11 @@
-
 const state = {
   //ws传递的数据
-  wsData: null,
+  unread: 0,
 }
 // 修改状态
 const mutations = {
-  handleWsData (state, data) {
-    state.wsData = data;
+  handleUnread (state, data) {
+    state.unread = data;
   },
 }
 export default {

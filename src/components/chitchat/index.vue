@@ -79,9 +79,9 @@ export default {
     },
     reply() {
       if (this.parent) {
-         this.$emit("replyMessage",this.parent,this.name)
+         this.$emit("replyMessage",this.parent,this.name,this.userId)
       }else{
-         this.$emit("replyMessage",this.replyId,this.name)
+         this.$emit("replyMessage",this.replyId,this.name,this.userId)
       }
      
     },

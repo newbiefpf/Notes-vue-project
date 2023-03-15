@@ -2,23 +2,26 @@
   <div class="groupBox">
     <div
       class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl"
-      v-for="(item, index) in arr"
+      v-for="(item, index) in messageList"
       :key="item.id"
       @click="readMessage(item)">
       <div class="font-medium dark:text-dark-primary textBox">
         <div class="textStyl">
-          <Badge status="error" v-if="item.id % 2 == 0" />
+          <Badge status="error" v-if="item.mark" />
           <Badge status="default" v-else />
-          {{ index + 1 }}.{{ item.text }}
+          {{ index + 1 }}.{{ item.message }}
         </div>
-        <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessage(item)" style="margin-right: 20px; cursor: pointer" /></div>
+        <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessage(item.ID)" style="margin-right: 20px; cursor: pointer" /></div>
       </div>
     </div>
 
     <popup :visible.sync="visible">
+      <template slot="body">
+        <replyChat :dataInfo="dataInfo" />
+      </template>
       <template slot="footer">
-        <button class="cancelBtn" @click="comfirm">取消</button>
-        <button class="comfirmBtn" @click="cancel">已读</button>
+        <button class="cancelBtn" @click="cancel">取消</button>
+        <button class="comfirmBtn" @click="comfirm">已读</button>
       </template>
     </popup>
     <popup :visible.sync="delVisible" :title="'删除提醒'" :width="'20%'" @handleCancel="cancel" @handleComfirm="deleteComfirm">
@@ -31,37 +34,70 @@
 
 <script>
 import popup from "@/components/popupWindows";
+import replyChat from "@/components/replyChat";
+import { messagesGet, messagePost, messageDelete } from "@/api/message";
+import { fmdata } from "@/utils/formatDate.js";
 export default {
   name: "Messages",
   data() {
     return {
-      arr: [
-        { id: 1, text: "cs" },
-        { id: 2, text: "cs" },
-        { id: 3, text: "cs" },
-        { id: 4, text: "cs" },
-        { id: 5, text: "cs" },
-        { id: 0, text: "cs" },
-        { id: 6, text: "cs" },
-        { id: 7, text: "cs" },
-        { id: 8, text: "cs" },
-        { id: 9, text: "cs" },
-      ],
+      messageList: [],
       visible: false,
       delVisible: false,
+      dataInfo: {},
+      deleteId: null,
     };
   },
-  components: { popup },
+  filters: {
+    fmtime(val) {
+      return fmdata(val);
+    },
+  },
+  components: { popup, replyChat },
+  created() {
+    this.getData();
+  },
   methods: {
+    getData() {
+      messagesGet().then((res) => {
+        if (res.code == 200) {
+          this.messageList = res.data.list;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
     readMessage(item) {
-      console.log(item.id);
+      this.dataInfo = item;
       this.visible = true;
     },
-    deleteMessage(item) {
-      console.log(item.id);
+    deleteMessage(id) {
+      this.deleteId = id;
       this.delVisible = true;
     },
     deleteComfirm() {
+      if (this.deleteId) {
+        messageDelete({ id: this.deleteId }).then((res) => {
+          if (res.code == 200) {
+            this.$Message.success(res.msg);
+            var data = {
+              msg: {
+                chat_msg_type: 2,
+                data: {
+                  to_user_id: this.$store.getters.userInfo.ID,
+                  content: "ping",
+                  type: "test",
+                },
+              },
+            };
+            this.$initWs.send(data);
+            this.getData();
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
+      }
+
       this.delVisible = false;
     },
     cancel() {
@@ -69,6 +105,25 @@ export default {
       this.delVisible = false;
     },
     comfirm() {
+      messagePost({ id: this.dataInfo.ID }).then((res) => {
+        if (res.code == 200) {
+          this.$Message.success(res.msg);
+          this.getData();
+          var data = {
+            msg: {
+              chat_msg_type: 2,
+              data: {
+                to_user_id: this.$store.getters.userInfo.ID,
+                content: "ping",
+                type: "test",
+              },
+            },
+          };
+          this.$initWs.send(data);
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
       this.visible = false;
     },
   },

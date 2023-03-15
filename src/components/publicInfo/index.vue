@@ -74,8 +74,8 @@
         </div>
       </div>
     </div>
-    <Drawer :closable="false" v-model="drawerShow" placement="right" width="30">
-      <div :class="[theme == 'dark' ? 'bg-dark-secondary' : 'bg-light-primary']" class="drawerSty">
+    <Drawer :closable="false" v-model="drawerShow" placement="right" width="30" class-name="drawerSty">
+      <div>
         <div>
           <h1>评论列表</h1>
         </div>
@@ -95,7 +95,7 @@
                   <chitchat
                     @replyMessage="replyMessage"
                     @sendLetter="sendLetter"
-                    :imgUrl="child.imgUrl"
+                    :imgUrl="child.avatar"
                     :content="child.comment"
                     :name="child.name"
                     :dataTime="child.CreatedAt"
@@ -109,8 +109,8 @@
           </div>
           <div class="bg-white dark:bg-dark-secondary shadow-sm flex border-b border-gray:100 dark:border-gray-600 replyBox">
             <button @click="sendMessage" class="bg-sky-blue dark:bg-dark-primary px-7 rounded-md text-white flex items-center gap-3">发表</button>
-            <input
-              type="search"
+            <textarea
+              rows="1"
               v-model="valueMessage"
               class="block px-4 py-1.5 text-base font-normal text-light-primary dark:text-white bg-light-primary dark:bg-dark-primary bg-clip-padding rounded-md transition ease-in-out m-0 dark:focus:text-white focus:border-sky-blue focus:outline-none"
               placeholder="@发表评论" />
@@ -152,6 +152,8 @@ export default {
       fatherId: null,
       modalType: false,
       sendUser: {},
+      personalLetter: null,
+      toUserId: null,
     };
   },
   filters: {
@@ -183,9 +185,13 @@ export default {
     this.getArticleDiscuss();
   },
   methods: {
+    sendToUser() {
+      console.log(1);
+    },
     clearPerson() {
       this.returnText = "";
       this.fatherId = null;
+      this.toUserId = null;
     },
     sendLetter(id, name) {
       this.drawerShow = false;
@@ -195,9 +201,10 @@ export default {
       };
       this.modalType = true;
     },
-    replyMessage(id, name) {
+    replyMessage(id, name, userId) {
       this.returnText = `@${name}：`;
-      console.log("回复的id", id, name);
+      this.toUserId = userId;
+      console.log("回复的id", id, name, "用户", userId);
       if (id) {
         this.fatherId = id;
       } else {
@@ -205,6 +212,9 @@ export default {
       }
     },
     sendMessage() {
+      if (!this.toUserId) {
+        this.toUserId = this.articleInfo.userId;
+      }
       if (this.valueMessage == "") {
         this.$Message.info("请输入评论类容！！！");
       } else {
@@ -214,9 +224,21 @@ export default {
           name: this.userInfo.name,
           avatar: this.userInfo.avatar || "https://i.loli.net/2017/08/21/599a521472424.jpg",
           comment: this.returnText + this.valueMessage,
+          toUserId: this.toUserId,
         };
         articleDiscussPut(data).then((res) => {
           if (res.code == 200) {
+            let data = {
+              msg: {
+                chat_msg_type: 2,
+                data: {
+                  to_user_id: this.toUserId,
+                  content: `${this.userInfo.name}提到了你`,
+                  type: "discuss",
+                },
+              },
+            };
+            this.$initWs.send(data);
             this.clearPerson();
             this.valueMessage = "";
             this.getArticleDiscuss();
@@ -255,7 +277,7 @@ export default {
             }
           });
 
-          console.log(this.commentList);
+          // console.log(this.commentList);
         } else {
           this.$Message.error(res.msg);
         }
@@ -340,7 +362,7 @@ export default {
   overflow: hidden;
 }
 .drawerSty {
-  height: 100%;
+  // height: 100%;
 }
 .replyList {
   overflow: hidden;

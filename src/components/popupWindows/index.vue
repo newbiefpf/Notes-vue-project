@@ -14,7 +14,7 @@
         </div>
         <div class="dialog_body">
           <slot name="body">
-            <span>这是一条消息</span>
+            <span>加载中。。。</span>
           </slot>
         </div>
         <div class="dialog_footer">
@@ -41,7 +41,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "消息",
+      default: "",
     },
     width: {
       type: String,

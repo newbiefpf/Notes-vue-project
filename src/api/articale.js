@@ -62,7 +62,7 @@ export function articleDiscuss (data) {
 
 export function articleDiscussPut (data) {
   return request({
-    url: '/api/articleDiscuss',
+    url: '/api/articleDiscuss/' + data.toUserId,
     method: 'put',
     data
   });

@@ -17,7 +17,7 @@ var socket = {
   // 心跳timer
   hearbeat_timer: null,
   // 心跳发送频率
-  hearbeat_interval: 30000,
+  hearbeat_interval: 60000,
 
   // 是否自动重连
   is_reonnect: true,
@@ -40,7 +40,7 @@ var socket = {
     }
     // 已经创建过连接不再重复创建
     if (socket.websock) {
-      console.log(socket.websock);
+      // console.log(socket.websock);
       return socket.websock
     }
     let user_id = store.state.user.userInfo.ID;
@@ -76,6 +76,20 @@ var socket = {
       console.log('连接成功')
       socket.socket_open = true
       socket.is_reonnect = true
+
+
+      let user_id = store.state.user.userInfo.ID;
+      var data = {
+        msg: {
+          chat_msg_type: 2,
+          data: {
+            to_user_id: user_id,
+            content: "ping",
+            type: "test"
+          }
+        }
+      }
+      socket.send(data)
       // 开启心跳
       socket.heartbeat()
     }
@@ -122,7 +136,8 @@ var socket = {
     var params = JSON.parse(message.data)
 
     if (params.kind != 0) {
-      console.log('收到服务器内容：', message.data)
+      store.state.wsData = params.data
+      // console.log('收到服务器内容：', message.data)
     }
 
     if (params == undefined) {
@@ -195,7 +210,8 @@ var socket = {
           chat_msg_type: 2,
           data: {
             to_user_id: user_id,
-            content: "ping"
+            content: "ping",
+            type: "test"
           }
         }
       }
