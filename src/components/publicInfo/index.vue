@@ -44,7 +44,7 @@
             <Button type="info" ghost>关注</Button>
           </div>
           <div style="margin-left: 5px">
-            <Button type="success" ghost>私信</Button>
+            <Button type="success" @click="sendLetterInfo" ghost>私信</Button>
           </div>
         </div>
       </div>
@@ -136,6 +136,8 @@
 import UiTitle from "@/components/ui/UiTitle";
 import chitchat from "@/components/chitchat";
 import { articleDiscuss, articleDiscussPut } from "@/api/articale";
+import { chatMessage } from "@/api/message";
+
 import popup from "@/components/popupWindows";
 import { fmdata } from "@/utils/formatDate.js";
 export default {
@@ -186,7 +188,31 @@ export default {
   },
   methods: {
     sendToUser() {
-      console.log(1);
+      if (this.personalLetter == "") {
+        this.$Message.error("私信类容不能为空！！！");
+        return;
+      }
+      let groupName = "";
+      if (Number(this.articleInfo.userId) > Number(this.userInfo.ID)) {
+        groupName = this.userInfo.ID + "_" + this.articleInfo.userId;
+      } else {
+        groupName = this.articleInfo.userId + "_" + this.userInfo.ID;
+      }
+      let date = new Date();
+      var data = {
+        msg: {
+          chat_msg_type: 2,
+          data: {
+            to_user_id: this.articleInfo.userId,
+            content: this.personalLetter,
+            user_id: this.userInfo.ID,
+            groupName: groupName,
+            date: date,
+            type: "chat",
+          },
+        },
+      };
+      this.$initWs.send(data);
     },
     clearPerson() {
       this.returnText = "";
@@ -194,12 +220,30 @@ export default {
       this.toUserId = null;
     },
     sendLetter(id, name) {
-      this.drawerShow = false;
-      this.sendUser = {
-        id,
-        name,
-      };
-      this.modalType = true;
+      console.log(this.userInfo);
+      if (this.articleInfo.userId == id) {
+        this.$Message.error("不能给自己私信哦");
+      } else {
+        this.drawerShow = false;
+        this.sendUser = {
+          id,
+          name,
+        };
+        this.modalType = true;
+      }
+    },
+    sendLetterInfo() {
+      console.log(this.articleInfo);
+      if (this.articleInfo.userId == this.userInfo.ID) {
+        this.$Message.error("不能给自己私信哦");
+      } else {
+        this.drawerShow = false;
+        this.sendUser = {
+          id: this.articleInfo.userId,
+          name: this.articleInfo.name,
+        };
+        this.modalType = true;
+      }
     },
     replyMessage(id, name, userId) {
       this.returnText = `@${name}：`;

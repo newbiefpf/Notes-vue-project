@@ -1,23 +1,52 @@
 <template>
   <div class="groupBox">
-    <div
-      class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl"
-      v-for="(item, index) in messageList"
-      :key="item.id"
-      @click="readMessage(item)">
-      <div class="font-medium dark:text-dark-primary textBox">
-        <div class="textStyl">
-          <Badge status="error" v-if="item.mark" />
-          <Badge status="default" v-else />
-          {{ index + 1 }}.{{ item.message }}
+    <div class="groupBoxLeft">
+      <Card class="bg-white dark:bg-dark-secondary rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600" dis-hover>
+        <template #title>私信消息</template>
+        <div
+          class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl"
+          v-for="(item, index) in chatMessageList"
+          :key="item.id"
+          @click="readMessageLfte(item.groupName)">
+          <div class="font-medium dark:text-dark-primary textBox">
+            <div class="textStyl">{{ index + 1 }}.你和用户{{ item.groupName[0].toUserId }}的私信</div>
+            <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessageLeft(item)" style="margin-right: 20px; cursor: pointer" /></div>
+          </div>
         </div>
-        <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessage(item.ID)" style="margin-right: 20px; cursor: pointer" /></div>
-      </div>
+      </Card>
+    </div>
+    <div class="groupBoxRight">
+      <Card class="bg-white dark:bg-dark-secondary rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600" dis-hover>
+        <template #title>系统消息</template>
+        <div
+          class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl"
+          v-for="(item, index) in messageList"
+          :key="item.id"
+          @click="readMessageRight(item)">
+          <div class="font-medium dark:text-dark-primary textBox">
+            <div class="textStyl">
+              <Badge status="error" v-if="item.mark" />
+              <Badge status="default" v-else />
+              {{ index + 1 }}.{{ item.message }}
+            </div>
+            <div class="textIcon"><Icon type="md-close" @click.stop="deleteMessageRight(item.ID)" style="margin-right: 20px; cursor: pointer" /></div>
+          </div>
+        </div>
+      </Card>
     </div>
 
-    <popup :visible.sync="visible">
+    <popup :visible.sync="visibleLeft">
       <template slot="body">
-        <replyChat :dataInfo="dataInfo" />
+        <div><Badge status="success" />在线/离线</div>
+        <replyChat v-if="visibleLeft" @addMessage="addMessage" :dataInfo="dataArrInfo" />
+      </template>
+      <template slot="footer">
+        <button class="cancelBtn" @click="cancel">关闭</button>
+      </template>
+    </popup>
+    <popup :visible.sync="visibleRight" :title="'系统消息'">
+      <template slot="body">
+        {{ dataInfo.message }}
       </template>
       <template slot="footer">
         <button class="cancelBtn" @click="cancel">取消</button>
@@ -35,17 +64,23 @@
 <script>
 import popup from "@/components/popupWindows";
 import replyChat from "@/components/replyChat";
-import { messagesGet, messagePost, messageDelete } from "@/api/message";
+import { messagesGet, messagePost, messageDelete, chatMessageGet } from "@/api/message";
 import { fmdata } from "@/utils/formatDate.js";
 export default {
   name: "Messages",
   data() {
     return {
       messageList: [],
+      chatMessageList: [],
       visible: false,
+      visibleLeft: false,
+      visibleRight: false,
       delVisible: false,
       dataInfo: {},
+      dataArrInfo: [],
       deleteId: null,
+      messageItem: null,
+      toUserId: null,
     };
   },
   filters: {
@@ -54,6 +89,38 @@ export default {
     },
   },
   components: { popup, replyChat },
+  watch: {
+    // 监听websocket返回的信息
+    "$store.state.wsData"(data) {
+      if (data.type == "chat") {
+        this.dataArrInfo.push({
+          created_at: data.date,
+          deleted_at: null,
+          groupArr: data.groupName,
+          message: data.content,
+          toUserId: data.to_user_id,
+          updated_at: data.date,
+          user_id: data.form_user_id,
+        });
+      }
+    },
+    visibleLeft(val) {
+      if (!val) {
+        var data = {
+          msg: {
+            chat_msg_type: 2,
+            data: {
+              to_user_id: this.toUserId,
+              user_id: this.$store.getters.userInfo.ID,
+              content: "离开了哦",
+              type: "online",
+            },
+          },
+        };
+        this.$initWs.send(data);
+      }
+    },
+  },
   created() {
     this.getData();
   },
@@ -66,12 +133,54 @@ export default {
           this.$Message.error(res.msg);
         }
       });
+      chatMessageGet().then((res) => {
+        if (res.code == 200) {
+          this.chatMessageList = res.data.list.filter((item) => item);
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
-    readMessage(item) {
+    readMessageLfte(item) {
+      this.dataArrInfo = item;
+      this.toUserId = null;
+      let list = item.filter((item) => item.user_id != this.$store.getters.userInfo.ID);
+      this.toUserId = list[0].user_id;
+      var data = {
+        msg: {
+          chat_msg_type: 2,
+          data: {
+            to_user_id: this.toUserId,
+            user_id: this.$store.getters.userInfo.ID,
+            content: "上线了",
+            type: "online",
+          },
+        },
+      };
+      this.$initWs.send(data);
+      this.visibleLeft = true;
+    },
+    addMessage(data, groupName) {
+      let date = new Date();
+      this.dataArrInfo.push({
+        created_at: date,
+        deleted_at: null,
+        groupArr: groupName,
+        message: data.content,
+        toUserId: data.to_user_id,
+        updated_at: date,
+        user_id: this.$store.getters.userInfo.ID,
+      });
+    },
+    readMessageRight(item) {
       this.dataInfo = item;
-      this.visible = true;
+      this.visibleRight = true;
     },
-    deleteMessage(id) {
+    deleteMessageRight(id) {
+      this.deleteId = id;
+      this.delVisible = true;
+    },
+    deleteMessageLeft(id) {
       this.deleteId = id;
       this.delVisible = true;
     },
@@ -101,7 +210,8 @@ export default {
       this.delVisible = false;
     },
     cancel() {
-      this.visible = false;
+      this.visibleRight = false;
+      this.visibleLeft = false;
       this.delVisible = false;
     },
     comfirm() {
@@ -164,6 +274,16 @@ export default {
   height: 650px;
   padding: 10px;
   overflow-y: auto;
+  display: flex;
+  // flex-wrap: wrap;
+  .groupBoxLeft {
+    width: 50%;
+    margin-right: 10px;
+  }
+  .groupBoxRight {
+    margin-left: 10px;
+    width: 50%;
+  }
 }
 .comfirmBtn {
   border: 1px solid;

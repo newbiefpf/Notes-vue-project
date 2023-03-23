@@ -60,7 +60,7 @@ export default {
           this.$Message.success("删除成功！！！");
           this.$parent.InfoShow = true;
         } else {
-          this.$Message.console.error(res.msg);
+          this.$Message.error(res.msg);
         }
       });
       this.modalType = false;

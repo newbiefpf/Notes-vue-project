@@ -103,7 +103,13 @@ export default {
             duration: 0,
           });
           break;
-        case "personal_letter":
+        case "online":
+          this.$Notice.info({
+            title: "用户状态提醒",
+            desc: data.content,
+          });
+          break;
+        case "chat":
           this.$Notice.info({
             title: "私信提醒",
             desc: data.content,

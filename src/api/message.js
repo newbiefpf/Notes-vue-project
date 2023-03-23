@@ -23,6 +23,21 @@ export function messageDelete (data) {
   });
 }
 
+export function chatMessage (data) {
+  return request({
+    url: '/api/chatMessage',
+    method: 'post',
+    data
+  });
+}
+
+export function chatMessageGet (data) {
+  return request({
+    url: '/api/chatMessage',
+    method: 'get',
+    data
+  });
+}
 
 
 

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Card class="bg-white dark:bg-dark-secondary z-50 rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600">
-      <template #title>消息通知</template>
-      <div>
-        <div class="noticeBox noticeFlex">
+    <Card class="mian bg-white dark:bg-dark-secondary z-50 rounded-md flex flex-col p-4 gap-3 border border-gray-100 dark:border-gray-600" ref="main">
+      <template #title>私信通知</template>
+      <div v-for="(item, index) in dataInfo" :key="index">
+        <div class="noticeBox noticeFlex" v-if="item.user_id != userInfo.ID">
           <div class="noticeHead">
             <div class="imgsyl">
               <img src="@/assets/photo.jpeg" alt="出错了" srcset="" />
@@ -11,24 +11,23 @@
           </div>
           <div class="noticeInfo">
             <div class="noticeTitleLeft noticeFlex">
-              <div class="name">名称</div>
-              <div class="time">回复时间{{ dataInfo.CreatedAt | fmtime }}</div>
+              <div class="name">名称{{ item.user_id }}</div>
+              <div class="time">回复时间：{{ item.created_at | fmtime }}</div>
             </div>
-            <div class="noticeCotent">
-              {{ dataInfo.message }}
+            <div class="noticeCotentLeft">
+              {{ item.message }}
             </div>
           </div>
         </div>
-        <div class="noticeBox noticeFlex">
+
+        <div class="noticeBox noticeFlex" v-else>
           <div class="noticeInfo">
             <div class="noticeTitleRight noticeFlex">
-              <div class="time">回复时间{{ dataInfo.CreatedAt | fmtime }}</div>
-              <div class="name">名称</div>
+              <div class="time">回复时间：{{ item.created_at | fmtime }}</div>
+              <div class="name">名称{{ item.user_id }}</div>
             </div>
-            <div class="noticeCotent">
-              {{ dataInfo.message }}1asdf asdf sadf asdf sadfgdh
-              的风格和风格的和的风格法定规划的风格和的风格和的风格和的风格和风格的和法国风格的恢复供电的风格活动分工和的风格
-              和感觉地方撒公司阿萨的方式爱德华廉洁奉公啊收到了工卡圣诞节离开啥地方感觉卢卡斯德国的福利就卡死的高发受到广泛卡拉受到广泛拉萨大哥是垃圾卡是江户时代法国好高级啊的安徽省阿斯顿嘎斯了拉到咖喱当时法国拉萨就看到过弗利卡式的了阿斯兰的就爱上了看得出过来就卡死的给疯狂拉升的肌肤拉萨地方关键是拉开绝对国防拉山口见到过发送多个发生了的功夫拉萨的2
+            <div class="noticeCotentRight">
+              {{ item.message }}
             </div>
           </div>
           <div class="noticeHead">
@@ -65,9 +64,9 @@ export default {
   },
   props: {
     dataInfo: {
-      type: Object,
-      default: function () {
-        return {};
+      type: Array,
+      default() {
+        return [];
       },
     },
   },
@@ -76,8 +75,55 @@ export default {
       return fmdata(val);
     },
   },
+  computed: {
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
+  },
+  watch: {
+    dataInfo: {
+      //深度监听，可监听到对象、数组的变化
+      handler() {
+        this.$nextTick(() => {
+          this.$refs.main.$el.scrollTop = this.$refs.main.$el.scrollHeight;
+        });
+      },
+      deep: true,
+    },
+  },
   methods: {
-    sendMessage() {},
+    sendMessage() {
+      if (this.replyMessage == "") {
+        this.$Message.error("发送类容不能为空！！！");
+        return;
+      }
+      let list = this.dataInfo.filter((item) => item.user_id != this.userInfo.ID);
+      let date = new Date();
+      var data = {
+        msg: {
+          chat_msg_type: 2,
+          data: {
+            to_user_id: list[0].user_id,
+            user_id: this.userInfo.ID,
+            groupName: list[0].groupArr,
+            date: date,
+            content: this.replyMessage,
+            type: "chat",
+          },
+        },
+      };
+      this.$initWs.send(data);
+      this.$emit("addMessage", data.msg.data, list[0].groupArr);
+      this.replyMessage = "";
+      this.$nextTick(() => {
+        this.$refs.main.$el.scrollTop = this.$refs.main.$el.scrollHeight;
+      });
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.main.$el.scrollTop = this.$refs.main.$el.scrollHeight;
+    });
   },
 };
 </script>
@@ -107,7 +153,7 @@ export default {
       padding: 0px 10px;
     }
     .name {
-      padding: 0px 4px;
+      padding: 0px 30px;
     }
   }
   .noticeTitleRight {
@@ -117,13 +163,36 @@ export default {
       padding: 0px 4px;
     }
     .name {
-      padding: 0px 10px;
+      padding: 0px 30px;
     }
   }
-  .noticeCotent {
-    padding: 4px 0px;
-    font-size: 16px;
+  .noticeCotentLeft {
+    padding: 4px 30px;
+    font-size: 20px;
+    font-weight: bolder;
     word-wrap: break-word;
   }
+  .noticeCotentRight {
+    text-align: right;
+    padding: 4px 30px;
+    font-size: 20px;
+    font-weight: bolder;
+    word-wrap: break-word;
+  }
+}
+.mian {
+  max-height: 500px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+.mian::-webkit-scrollbar {
+  width: 6px !important;
+  background: #fff !important;
+  border-radius: 6px;
+}
+.mian::-webkit-scrollbar-thumb {
+  background: #aaa !important;
+  height: 6px !important;
+  border-radius: 6px;
 }
 </style>
