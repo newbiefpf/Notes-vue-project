@@ -67,3 +67,19 @@ export function articleDiscussPut (data) {
     data
   });
 }
+
+export function articleClassifyGet () {
+  return request({
+    url: '/api/articleClassify',
+    method: 'get',
+
+  });
+}
+
+export function articleClassifyPost (data) {
+  return request({
+    url: '/api/articleClassify',
+    method: 'post',
+    data
+  });
+}

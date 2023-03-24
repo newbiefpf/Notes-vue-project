@@ -21,6 +21,21 @@ export function ping () {
   });
 }
 
+export function userGet () {
+  return request({
+    url: '/api/user',
+    method: 'get',
+  });
+}
+
+
+export function userPost (data) {
+  return request({
+    url: '/api/user',
+    method: 'post',
+    data
+  });
+}
 
 
 

@@ -28,7 +28,7 @@
                   <Card class="bg-light-primary dark:bg-dark-modifier-active dark:text-dark-modifier-active cardStyl" @click.native="openInfo(child)">
                     <div class="articlBox">
                       <div class="articlImg">
-                        <img src="@/assets/photo.jpeg" alt="出错了" srcset="" v-if="child.imgUrl == ''" />
+                        <img src="@/assets/xbrys.jpg" alt="出错了" srcset="" v-if="child.imgUrl == ''" />
                         <img :src="child.imgUrl" alt="出错啦" v-else />
                       </div>
                       <div class="articlContent">

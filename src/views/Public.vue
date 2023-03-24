@@ -12,7 +12,8 @@
           @click="openInfo(item)">
           <div class="articleGroup">
             <div class="articleImg">
-              <img :src="item.imgUrl" alt="出错啦！" />
+              <img :src="item.imgUrl" alt="出错啦！" v-if="item.imgUrl" />
+              <img src="@/assets/xbrys.jpg" alt="出错啦！" />
             </div>
             <div class="articleContent">
               <div class="articleTitle">文章：{{ item.title }}</div>

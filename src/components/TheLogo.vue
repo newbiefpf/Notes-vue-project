@@ -3,7 +3,8 @@
     <div v-if="userInfo">
       <router-link to="/home" class="flex gap-x-3 items-center justify-center">
         <div class="headImg">
-          <img src="@/assets/photo.jpeg" alt="出错了" srcset="" />
+          <img src="@/assets/avatar.jpg" alt="出错了" srcset="" v-if="!userInfo.avatar" />
+          <img :src="userInfo.avatar" alt="出错了" srcset="" v-else />
         </div>
         <div>
           <p class="font-bold text-sky-blue font-mono tracking-widest uppercase hidden md:block">{{ userInfo.name }}</p>

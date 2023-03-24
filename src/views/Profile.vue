@@ -11,10 +11,7 @@
           <Col span="12">
             <FormItem label="分类">
               <Select v-model="dataInfo.classify" placeholder="请选择分类">
-                <Option value="1">New York</Option>
-                <Option value="2">London</Option>
-                <Option value="3">Sydney</Option>
-                <Option value="4">sadasff</Option>
+                <Option v-for="item in classifyList" :value="item.classId">{{ item.label }}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -85,7 +82,7 @@
 <script>
 import { quillEditor } from "vue-quill-editor";
 import popup from "@/components/popupWindows";
-import { articlePut, articleGet, articlePost } from "@/api/articale";
+import { articlePut, articleGet, articlePost, articleClassifyGet } from "@/api/articale";
 import UploadImg from "@/components/Upload/index.vue";
 export default {
   name: "Profile",
@@ -107,7 +104,6 @@ export default {
             [{ color: [] }, { background: [] }], // 字体颜色，字体背景颜色
             [{ font: [] }], //字体
             [{ align: [] }], //对齐方式
-
             ["image"], //上传图片、上传视频
             ["clean"], //清除字体样式v
           ],
@@ -121,9 +117,10 @@ export default {
         title: null,
         abstract: null,
         contentHtml: null,
-        classify: "1",
+        classify: null,
         public: true,
       },
+      classifyList: [],
       defaultImgUrlList: [],
       articleId: null,
       ruleCustom: {
@@ -170,13 +167,29 @@ export default {
           }
         });
       }
+      articleClassifyGet().then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          this.classifyList = res.data.map((res) => {
+            return {
+              status: 1,
+              ID: res.ID,
+              UserID: res.UserID,
+              classId: res.classId,
+              label: res.label,
+            };
+          });
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
     handleSubmit(name) {
       var vm = this;
       vm.$refs[name].validate((valid) => {
         if (valid) {
           vm.dataInfo.userId = vm.userInfo.ID;
-
+          vm.dataInfo.classify = vm.dataInfo.classify.toString();
           if (vm.articleId) {
             vm.dataInfo.id = Number(vm.articleId);
             articlePost(this.dataInfo).then((res) => {

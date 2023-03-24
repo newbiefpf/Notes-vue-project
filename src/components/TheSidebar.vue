@@ -5,7 +5,7 @@
       <UiSidebarItem to="/profile" name="笔记发布" icon="user" />
       <UiSidebarItem to="/messages" name="消息通知" icon="envelope" />
       <UiSidebarItem to="/public" name="共享笔记" icon="comment" />
-      <UiSidebarItem to="/settings" name="基础配置" icon="cogs" />
+      <UiSidebarItem to="/settings" name="个人配置" icon="cogs" />
     </UiSidebar>
   </div>
 </template>

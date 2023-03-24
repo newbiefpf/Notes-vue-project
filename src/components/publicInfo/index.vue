@@ -123,7 +123,7 @@
         </div>
       </div>
     </Drawer>
-    <popup :visible.sync="modalType" :width="'40%'" :title="`私信给${sendUser.name}`" @handleCancel="modalType = false" @handleComfirm="sendToUser">
+    <popup :visible.sync="modalType" :width="'40%'" :title="`私信给他`" @handleCancel="modalType = false" @handleComfirm="sendToUser">
       <template slot="body">
         <div class="font-medium text-light-primary dark:text-dark-primary">
           <Input v-model="personalLetter" type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" />
@@ -213,6 +213,9 @@ export default {
         },
       };
       this.$initWs.send(data);
+      this.$Message.success("私信发送成功！！！");
+      this.modalType = false;
+      this.personalLetter = "";
     },
     clearPerson() {
       this.returnText = "";

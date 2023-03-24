@@ -38,7 +38,6 @@ export default {
     return {
       uploadAction: "http://localhost:8888/api/uploadImages",
       authorization: null,
-
       urlString: "",
       defaultList: [],
       imgName: "",
@@ -96,7 +95,7 @@ export default {
     },
     handleBeforeUpload() {
       if (this.uploadList.length) {
-        this.$Message.info("只能有一个封面哦");
+        this.$Message.info("只能有一张图片哦");
         return false;
       }
     },
